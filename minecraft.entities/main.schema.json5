@@ -1,0 +1,11 @@
+{
+  $schema: 'https://json-schema.org/draft-07/schema',
+  $id: 'main.schema.json',
+  title: 'minecraft:entity',
+  type: 'object',
+  properties: {
+    description: {$ref: 'descrption.schema.json5'},
+    components: {$ref: 'component.schema.json5'}
+  },
+  required: ['description', 'components']
+}

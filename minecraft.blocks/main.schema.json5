@@ -1,0 +1,15 @@
+{
+  $schema: 'http://json-schema.org/draft-07/schema',
+  $id: 'minecraft.block.schema.json',
+  title: 'minecraft:block',
+  type: 'object',
+  properties: {
+    description: {type: 'object', properties: {
+      identifier: {type: 'string'}
+    },
+      required: ['identifier']
+    },
+    components: {$ref: 'components.schema.json5'}
+  },
+  required: ['description', 'components']
+}

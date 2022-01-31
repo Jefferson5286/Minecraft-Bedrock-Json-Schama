@@ -1,0 +1,15 @@
+{
+  $schema: 'http://json-schema.org/draft-07/schema',
+  $id: 'main.schema.json',
+  title: 'MainJsonSchema',
+  type: 'object',
+  properties: {
+    format_version: {type: 'string', enum: ['1.8.0', '1.10.0', '1.14.0', '1.16.0', '1.16.100']},
+    'minecraft:entity': {$ref: 'minecraft.entities/main.schema.json5'},
+    'minecraft:item': {$ref: 'minecraft.items/main.schema.json5'},
+    'minecraft:block': {$ref: 'minecraft.blocks/main.schema.json5'}
+  },
+  required: ['format_version'],
+  minProperties: 2,
+  maxProperties: 2
+}

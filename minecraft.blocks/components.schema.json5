@@ -1,0 +1,157 @@
+{
+  $schema: 'http://json-schema.org/draft-07/schema',
+  $id: 'minecraft.blocks.components.schema.json',
+  title: 'minecraft:blocks.components',
+  type: 'object',
+  properties: {
+
+    // é um integer componente que define quanta luz o bloco irá absorver.
+    'minecraft:block_light_absorption': {type: 'integer'},
+
+    // é um decimal componente que define quanta luz o bloco emitirá em um intervalo [0,0, 1,0].
+    'minecraft:block_light_emission': {type: 'number'},
+
+    // é um componente que define a respirabilidade do bloco e se é tratado como um bloco sólido ou um block de ar.
+    'minecraft:breathability': {type: 'string', enum: ['solid', 'air']},
+
+    // é um componente que especifica o grupo de criativos para o bloco.
+    'minecraft:creative_category': {$ref: 'creative_category.schema.json5'},
+
+    // é um decimal componente que define a propriedade de tempo de destruição para o bloco. O tempo é medido em segundos com o equipamento básico.
+    'minecraft:destroy_time': {type: 'number'},
+
+    // é um String componente que especifica a chave do arquivo de idioma que mapeia para qual texto será exibido quando você passar o mouse sobre o bloco.
+    'minecraft:display_name': {type: 'string'},
+
+    // é um componente controlado por um boolean que desabilita a colisão do bloco com entidades.
+    'minecraft:entity_collision': {type: ['boolean', 'object'], properties: {
+      origin: {type: 'array'},
+      size: {type: 'array'}
+    }},
+
+    // é um decimal componente que define a resistência à explosão do bloco.
+    'minecraft:explosion_resistance': {type: 'number'},
+
+    // é um componente controlado por um JSON object que contém as propriedades inflamáveis para este bloco.
+    'minecraft:flammable': {type: 'object', properties: {
+      burn_odds: {type: 'integer'},
+      flame_odds: {type: 'integer'}
+    }},
+
+    // é um decimal componente que define o atrito para o bloco. O atrito afeta os movimentos de uma entidade quando ela anda no bloco.
+    'minecraft:friction': {type: 'number', default: 0.1},
+
+    // é uma String componente que define o modelo de geometria a ser usado para o bloco. Esse identificador deve corresponder a um identificador de geometria existente em qualquer um dos pacotes de recursos carregados no momento.
+    'minecraft:geometry': {type: 'string'},
+
+    // é um boolean componente que define o estado imóvel para o bloco, não permitindo que ele seja movido por um pistão.
+    'minecraft:immovable': {type: 'boolean', default: false},
+
+    // é uma String componente que define o caminho para a tabela de loot, relativo ao pacote de comportamento.
+    'minecraft:loot': {type: 'string'},
+
+    // define o MapColor para o bloco na forma de um valor hexadecimal. O valor será a cor quando renderizado em um mapa.
+    'minecraft:map_color': {type: 'string'},
+
+    // é um JSON Object componente que mapeia a face ou os nomes de MaterialInstance em um arquivo de geometria para uma instância de material real, ou um nome para outra instância já definida.
+    'minecraft:material_instances': {type: 'object', properties: {
+      texture: {type: 'string'},
+      render_method: {type: 'string', default: 'opaque'},
+      ambient_occlusion: {type: 'boolean', default: true},
+      face_dimming: {type: 'boolean', default: true}
+    }},
+
+    // é um boolean componente que define que o bloco só pode ser empurrado por um pistão, mas não pode ser preso a um pistão pegajoso
+    'minecraft:onlypistonpush': {type: 'boolean'},
+
+    // mapeia nomes de bone em um arquivo de geometria para uma condição que ativa/desativa sua renderização. A condição deve ser uma consulta MoLang que usa propriedades de bloco para determinar verdadeiro/falso.
+    // As consultas com suporte incluem 'has_block_property', block_property, e outras consultas que podem ser avaliadas sem o conhecimento dos dados de posição do bloco no jogo ou afetados pelo jogador.
+    'minecraft:part_visibility': {type: 'object'},
+
+    // é um componente controlado por um boolean que desabilita a colisão do bloco com entidades.
+    'minecraft:pick_collision': {type: ['boolean', 'object'], properties: {
+      origin: {type: 'array'},
+      size: {type: 'array'}
+    }},
+
+    // é um componente controlado por um JSON object que define regras para sob quais condições o bloco pode ser colocado.
+    'minecraft:placement_filter': {type: 'object', properties: {
+      conditions: {type: 'array', items: {type: 'object', properties: {
+        allowed_faces: {type: 'array'},
+        block_filter: {type: 'array'}
+      },
+        required: ['allowed_faces', 'block_filter']
+      }}
+    },
+      required: ['conditions']
+    },
+
+    // é um boolean componente que evita que os atores saltem ao caminhar no quarteirão.
+    'minecraft:preventsjumping': {type: 'boolean'},
+
+    // é um componente controlado por um JSON object que descreve como o componente acionará um evento em um intervalo irregular entre dois valores.
+    'minecraft:random_ticking': {type: 'object', properties: {
+      condition: {type: ['integer','string'], default: 1},
+      event: {type: 'string', default: 'set_block_property'},
+      range: {type: 'array', items: {type: 'number'}},
+      target: {type: 'string', default: 'self'}
+    }},
+
+    // é um vector componente que define a rotação do bloco em torno do centro do cubo em graus.
+    'minecraft:rotation': {type: 'array', minItems: 3, maxItems: 3, items: {type: 'number'}},
+
+    // descreve como o componente acionará um evento em um intervalo regular entre dois valores.
+    'minecraft:ticking': {type: 'object', properties: {
+      condition: {type: ['integer','string'], default: 1},
+      event: {type: 'string', default: 'set_block_property'},
+      range: {type: 'array'},
+      target: {type: 'string', default: 'self'},
+      looping: {type: 'boolean', default: true}
+    }},
+
+    // é um JSON Object componente que especifica que um cubo unite deve ser usado com tesselação.
+    'minecraft:unit_cube': {},
+
+    // é um boolean componente que especifica o bloco como intransitável.
+    'minecraft:unwalkable': {type: 'boolean'},
+
+// ================================== adicionadores de blocos ===================================================
+
+    // é um Event Trigger para quando um ator cai e cai no bloco.
+    'minecraft:on_fall_on': {type:'object', properties: {
+      condition: {type: 'string'},
+      event: {type: 'string'},
+      min_fall_distance: {type: 'number'},
+      target: {type: 'string', default: 'self'}
+    },
+      required: ['condition', 'event', 'min_fall_distance', 'target']
+    },
+
+    // é um Event Trigger para quando um ator interage com um bloco.
+    'minecraft:on_interact': {$ref: '#/$def/event_for_blocks_additional'},
+
+    // é um Event Trigger para quando um ator coloca um bloco no mundo.
+    'minecraft:on_placed': {$ref: '#/$def/event_for_blocks_additional'},
+
+    // é um Event Trigger para quando um ator, que é marcado como jogador, destrói um bloco.
+    'minecraft:on_player_destroyed': {$ref: '#/$def/event_for_blocks_additional'},
+
+    // é um Event Trigger para quando um ator, que é marcado como jogador, coloca um bloco no mundo.
+    'minecraft:on_player_placing': {$ref: '#/$def/event_for_blocks_additional'},
+
+    // é um acionador de evento para quando um ator sai do bloco.
+    'minecraft:on_step_off': {$ref: '#/$def/event_for_blocks_additional'},
+
+    // é um Event Trigger para quando um ator pisa no bloco.
+    'minecraft:on_step_on': {$ref: '#/$def/event_for_blocks_additional'},
+  },
+  $def: {
+    event_for_blocks_additional: {type: 'object', properties: {
+      condition: {type: 'string'},
+      event: {type: 'string'},
+      target: {type: 'string', default: 'self'}
+    },
+      required: ['condition', 'event', 'target']
+    }
+  }
+}

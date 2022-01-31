@@ -1,0 +1,3324 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "component.schema.json",
+  "type": "object",
+  "properties": {
+    // adicionar um passageiro à entidade
+    "minecraft:addrider": {
+      "type": "object",
+      description: "adicionar um passageiro à entidade",
+      "properties": {
+        "spawn_event": {"type": "string"},
+        "entity_type": {"type": "string"}
+      },
+      "required": ["spawn_event", "entity_type"]
+    },
+
+    // permite que uma entidade ignore alvos que podem ser atacados por um determinado período.
+    "minecraft:admire_item": {
+      "type": "object",
+      "properties": {
+        "cooldown_after_being_attacked": {"type": "integer", "default": 0},
+        "duration": {"type": "integer", "default": 10}
+      },
+      "required": ["cooldown_after_being_attacked", "duration"]
+    },
+
+    // adicionará um cronômetro para a entidade crescer. Ele pode ser acelerado fornecendo à entidade os itens que ela gosta, conforme definido por feed_items.
+    "minecraft:ageable": {
+      "type": "object",
+      "properties": {
+        "drop_items": {"type": ["string", "array"], items: {"type": "string"}},
+        "duration": {"type": "number", "default": 1200.0},
+        "feed_items": {
+          "type": ["array"],
+          "items": {
+            "type": ["string", "object"],
+            "properties": {
+              "items": {"type": "string"},
+              "growth": {"type": "number"}
+            },
+            "required": ["items", "growth"]
+          },
+          "minItems": 1
+        },
+        "grow_up": {
+          type: "object",
+          "properties": {
+            "event": {"type": "string"},
+            "target": {"type": "string"}
+          },
+          required: ["event", "target"]
+        }
+      },
+      "required": ["duration", "grow_up"]
+    },
+
+    // desenvolvimento pendente, parameters: [broadcast_filters, filters]!
+    // define o estado 'irritado' da entidade usando um cronômetro
+    "minecraft:angry": {
+      "type": "object",
+      "properties": {
+        "angry_sound": {"type": "string"},
+        "broadcast_anger": {"type": "boolean"},
+        "broadcast_anger_on_attack": {"type": "boolean"},
+        "broadcast_anger_on_being_attacked": {"type": "boolean"},
+        "broadcast_filters": {"type": "array"}, // desenvolvimento pendente
+        "broadcast_range": {"type": "integer", "default": 20},
+        "broadcast_targets": {"type": "array", items: {"type": "string"}, minItems: 1},
+        "duration": {"type": "integer", "default": 25},
+        "duration_delta": {"type": "integer"},
+        "filters": {"type": "null"}, // desenvolvimento pendente
+        "sound_interval": {"type": ["array", "integer"], "items": {"type": "string"}, "minItems": 1, "maxItems": 2},
+        "calm_event": {
+          "type": "object",
+          "properties": {
+            "event": {"type": "string"},
+            "target": {"type": "string"}
+          },
+          required: ["event", "target"]
+        }
+      },
+      "required": ["duration"]
+    },
+
+    // permite que uma entidade quebre portas, assumindo que os sinalizadores configurados para o componente usar na navegação
+    "minecraft:annotation.break_door": {
+      "type": "object",
+      "properties": {
+        "importante": {"type": "string", "default": "minecraft:navigation.walk/can_break_doors deve ser definido como true"},
+        "break_time": {"type": "number", "default": 12.0},
+        "min_difficulty": {"type": "string", "default": "hard", "enum": ["peaceful", "easy", "normal", "hard"]}
+      },
+      "required": ["importante"]
+    },
+
+    // desenvolvimento pendente
+    // permite que uma entidade abra portas, assumindo que os sinalizadores configurados para o componente usar na navegação.
+    "minecraft:annotation.open_door": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // desenvolvimento pendente, parameters [entity_filters]!
+    // é um componente que causa dano a entidades que ficam dentro do alcance.
+    "minecraft:area_attack": {
+      "type": "object",
+      "properties": {
+        "cause": {"type": "string"},
+        "entity_filter": {"type": "array"},
+        "damage_per_tick": {"type": "integer", "default": 2},
+        "damage_range": {"type": "number", "default": 0.2}
+      },
+      "required": []
+    },
+
+    // adiciona um cooldown a uma entidade. A intenção deste cooldown é ser usado para evitar que a entidade tente adquirir novos alvos de ataque.
+    "minecraft:attack_cooldown": {
+      "type": "object",
+      "properties": {
+        "attack_cooldown_complete_event": {"type": ["object", "string"],
+          properties: {
+            "event": {"type": "string"},
+            "target": {"type": "string"}
+          },
+          required: ["event", "target"]
+        },
+        "attack_cooldown_time": {"type": "array", "default": [0,0, 1,0], items: {"type": "number"}}
+      },
+      "required": []
+    },
+
+    // permite que o componente solte um item como uma troca de troca.
+    "minecraft:barter": {
+      "type": "object",
+      "properties": {
+        "barter_table": {"type": "string"},
+        "cooldown_after_being_attacked": {"type": "number"}
+      },
+      "required": ["barter_table", "cooldown_after_being_attacked"]
+    },
+
+    // permite ao jogador detectar e manobrar no bloco de andaime.
+    "minecraft:block_climber": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // disparará um evento especificado quando um bloco na lista de bloqueios for quebrado dentro do alcance do sensor.
+    "minecraft:block_sensor": {
+      "type": "object",
+      "properties": {
+        "sensor_radius": {"type": "number"},
+        "on_break": {
+          "type": "array",
+          "items": {"type": "object"},
+          "properties": {
+            "block_list": {"type": "array", "items": {"type": "string"}},
+            "on_block_broken": {"type": "string"}
+          }
+        }
+      },
+      "required": []
+    },
+
+    // define as condições e o comportamento do impulso de uma entidade montável.
+    "minecraft:boostable": {
+      "type": "object",
+      "properties": {
+        "boost_items": {
+          "type": "array",
+          "items": {"type": ["object"],
+            "properties": {
+              "damage": {"type": "integer", "default": 1},
+              "Items": {"type": "string"},
+              "replace_item": {"type": "string"}
+            },
+            required: ["damage", "Items", "replace_item"]
+          }
+        },
+        "duration": {"type": "number", "default": 3.5},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["duration", "speed_multiplier", "boost_items"]
+    },
+
+    // define o estado atual do chefe para atualizar o HUD do chefe
+    "minecraft:boss": {
+      "type": "object",
+      "properties": {
+        "hud_range": {"type": "integer", "default": 55},
+        "name": {"type": "string"},
+        "should_darken_sky": {"type": "boolean"}
+      },
+      "required": ["hud_range","should_darken_sky"]
+    },
+
+    // especifica os blocos que a entidade pode quebrar à medida que se move.
+    "minecraft:break_blocks": {
+      "type": "object",
+      "properties": {
+        "breakable_blocks": {
+          type: "array",
+          "items": {"type": "string", "minItems": 1}
+        }
+      },
+      "required": ["breakable_blocks"]
+    },
+
+    // permite que uma entidade respire certos blocos e lhes dá a capacidade de sufocar.
+    "minecraft:breathable": {
+      "type": "object",
+      "properties": {
+        "breathe_blocks": {"type": "array", "items": {"type": "string"}},
+        "breathes_air": {"type": "boolean", "default": true},
+        "breathes_lava": {"type": "boolean", "default": true},
+        "breathes_solids": {"type": "boolean"},
+        "breathes_water": {"type": "boolean"},
+        "generates_bubbles": {"type": "boolean", "default": true},
+        "inhale_time": {"type": "number", "default": 0.0},
+        "non_breathe_blocks": {"type": "array", "items": {"type": "string"}},
+        "suffocate_time": {"type": "integer", "default": -20},
+        "total_supply": {"type": "integer", "default": 15}
+      },
+      "required": [
+        "breathe_blocks",
+        "breathes_air",
+        "breathes_lava",
+        "breathes_solids",
+        "breathes_water",
+        "generates_bubbles",
+        "inhale_time",
+        "non_breathe_blocks",
+        "suffocate_time",
+        "total_supply"
+      ]
+    },
+
+    // permite que uma entidade estabeleça uma maneira de entrar no loveestado usado para reprodução
+    "minecraft:breedable": {
+      "type": "object",
+      "properties": {
+        "allow_sitting": {"type": "boolean"},
+        "blend_attributes": {"type": "boolean", "default": true},
+        "breed_cooldown": {"type": "number"},
+        "breed_items": {"type": "array", "items": {"type": "string"}},
+        "breeds_with": {"type": "array", "items": {"type": "object"},
+          "properties": {
+            "baby_type": {"type": "string"},
+            "breed_event": {"type": ["string", "object"], "properties": {
+              "event": {"type": "string"},
+              "target": {"type": "string"}
+            }},
+            "mate_type": {"type": "string"}
+          },
+          "required": ["baby_type", "breed_event", "mate_type"]
+        },
+        "causes_pregnancy": {"type": "boolean"},
+        "deny_parents_variant": {"type": "object",
+          "properties": {
+            "chance": {"type": "number", "default": 0.0},
+            "max_variant": {"type": "integer", "default": 0},
+            "min_variant": {"type": "integer", "default": 0}
+          },
+          required: ["chance", "max_variant", "min_variant"]},
+        "environment_requirements": {"type": "array", "items": {"type": "object"},
+          "properties":{
+            "blocks": {"type": "array", "items": {"type": "string"}},
+            "count": {"type": "integer"},
+            "radius": {"type": "number"}
+          },
+          "required": ["blocks", "count", "radius"]
+        },
+        "extra_baby_chance": {"type": "number", "default": 0},
+        "inherit_tamed": {"type": "boolean"},
+        "love_filters": {"type": "null"},
+        "mutation_factor": {"type": "object",
+          "properties": {
+            "color": {"type": "number", "default": 0},
+            "extra_variant": {"type": "number", "default": 0},
+            "variant": {"type": "number", "default": 0}
+          },
+          "required": ["color", "extra_variant", "variant"]
+        },
+        "require_full_health": {"type": "boolean"},
+        "require_tame": {"type": "boolean", "default": true}
+      },
+      "required": ["breed_items", "breeds_with"]
+    },
+
+    // permite que uma entidade estabeleça uma maneira de entrar no bribedestado.
+    "minecraft:bribeable": {
+      "type": "object",
+      "properties": {
+        "bribe_cooldown": {"type": "number", "default": 2.0},
+        "bribe_items": {"type": ["string", "array"], "items": {"type": "string"}, "minItems": 1}
+      },
+      "required": ["bribe_items"]
+    },
+
+    // permite que uma entidade flutue nos blocos líquidos especificados.
+    "minecraft:buoyant": {
+      "type": "object",
+      "properties": {
+        "apply_gravity": {"type": "boolean", "default": true},
+        "base_buoyancy": {"type": "number", "default": 1.0},
+        "big_wave_probability": {"type": "number", "default": 0.03},
+        "big_wave_speed": {"type": "number", "default": 10.0},
+        "drag_down_on_buoyancy_removed": {"type": "number", "default": 0.0},
+        "liquid_blocks": {"type": "array", "items": {"type": "string"}},
+        "simulate_waves": {"type": "boolean", "default": true}
+      },
+      "required": [
+        "apply_gravity", "base_buoyancy", "big_wave_probability", "big_wave_speed",
+        "drag_down_on_buoyancy_removed", "liquid_blocks", "simulate_waves"
+      ]
+    },
+
+    // permite que uma entidade queime quando é dia.
+    "minecraft:burns_in_daylight": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // permite que uma entidade celebre ao caçar uma entidade específica.
+    "minecraft:celebrate_hunt": {
+      "type": "object",
+      "properties": {
+        "broadcast": {"type": "boolean", "default": true},
+        "celeberation_targets": {"type": "null"},
+        "celebrate_sound": {"type": "string"},
+        "duration": {"type": "integer", "default": 4},
+        "radius": {"type": "number", "default": 16.0},
+        "sound_interval": {"type": "array", "items": {"type": "integer", "default": 0}}
+      },
+      "required": []
+    },
+
+    // á Regeneração I e remove Fadiga de Mineração do mob que mata o alvo de ataque do Ator.
+    "minecraft:combat_regeneration": {
+      "type": "object",
+      "properties": {
+        "regeneration_duration": {"type": "integer", "default": 7},
+        "apply_to_self": {"type": "boolean", "default": true},
+        "apply_to_family": {"type": "boolean"}
+      },
+      "required": []
+    },
+
+    // define as otimizações de largura de banda de atualização espacial condicional dessa entidade.
+    "minecraft:conditional_bandwidth_optimization": {
+      "type": "object",
+      "properties": {
+        "conditional_values": {"type": "array", "items": {"type": "object",
+          "properties": {
+            "max_dropped_ticks": {"type": "integer"},
+            "max_optimized_distance": {"type": "integer"},
+            "use_motion_prediction_hints": {"type": "boolean"}
+          },
+          "required": ["max_optimized_distance", "max_dropped_ticks", "use_motion_prediction_hints"]
+        },
+          "minItems": 1},
+        "default_values": {"type": "object",
+          "properties": {
+            "max_dropped_ticks": {"type": "integer"},
+            "max_optimized_distance": {"type": "integer"},
+            "use_motion_prediction_hints": {"type": "boolean"}
+          },
+          "required": ["max_dropped_ticks", "max_optimized_distance", "use_motion_prediction_hints"]}
+      },
+      "required": ["conditional_values", "default_values"]
+    },
+
+    // define uma lista de hitboxes para ataques corpo a corpo e à distância contra a entidade.
+    "minecraft:custom_hit_test": {
+      "type": "object",
+      "properties": {
+        "hitboxes": {"type": "null", "properties": {
+          "width": {"type": "number"},
+          "height": {"type": "number"},
+          "pivot": {"type": "array", "items": {"type": "number"}}
+        },
+          required: ["width", "height", "pivot"],
+          "items": {
+            "type": "object",
+            "properties": {
+              "width": {"type": "number"},
+              "height": {"type": "number"},
+              "pivot": {"type": "array", "items": {"type": "number"}}
+            },
+            required: ["width", "height", "pivot"]
+          }
+        }
+      },
+      "required": ["hitboxes"]
+    },
+
+    // aplica uma quantidade definida de dano à entidade em intervalos especificados.
+    "minecraft:damage_over_time": {
+      "type": "object",
+      "properties": {
+        "damage_per_hurt": {"type": "number"},
+        "time_between_hurt": {"type": "number"}
+      },
+      "required": ["damage_per_hurt", "time_between_hurt"]
+    },
+
+    // desenvolvimento pendente
+    // define quais eventos chamar quando esta entidade for danificada por entidades ou itens específicos.
+    "minecraft:damage_sensor": {
+      "type": "object",
+      "properties": {"triggers": {"type": "object",
+        "properties": {
+          "on_damage": {"type": "object", "properties": {
+            "filters": {"type": "null"},
+            "target": {"type": "string"},
+            "event": {"type": "string"}
+          }, "required": ["filters", "target", "event"]},
+          "cause": {"type": "string", "default": null},
+          "damage_modifier": {"type": "number", "default": 0.0},
+          "damage_multiplier": {"type": "number", "default": 1.0},
+          "deals_damage": {"type": "boolean", "default": true},
+          "on_damage_sound_event": {"type": "string"}
+        }
+      }},
+      "required": ["triggers"]
+    },
+
+    // desenvolvimento pendente
+    // permite que uma entidade despawn quando as regras de despawn ou filtros opcionais forem avaliadas como verdadeiras.
+    "minecraft:despawn": {
+      "type": "object",
+      "properties": {
+        "despawn_from_distance": {"type": "object", "properties": {
+          "max_distance": {"type": "integer", "default": 128},
+          "min_distance": {"type": "integer", "default": 32}
+        }, "required": ["max_distance", "min_distance"]},
+        "despawn_from_chance": {"type": "boolean", "default": true},
+        "despawn_from_inactivity": {"type": "boolean", "default": true},
+        "despawn_from_simulation_edge": {"type": "boolean", "default": true},
+        "filters": {"type": "null"},
+        "min_range_inactivity_timer": {"type": "integer", "default": 30},
+        "min_range_random_chance": {"type": "integer", "default": 800},
+        "remove_child_entities": {"type": "boolean"}
+      },
+      "required": ["filters"]
+    },
+
+    // define um temporizador para secagem que fará uma contagem regressiva e disparará 'dried_out_event' ou parará assim que a entidade ficar sob chuva ou água e fogo stopped_drying_out_event.
+    "minecraft:drying_out_timer": {
+      "type": "object",
+      "properties": {
+        "total_time": {"type": "number", "default": 0.0},
+        "dried_out_event": {"type": "string"},
+        "recover_after_dried_out_event": {"type": "string"},
+        "stopped_drying_out_event": {"type": "string"},
+        "water_bottle_refill_time": {"type": "number", "default": 0.0}
+      },
+      "required": [
+        "total_time",
+        "dried_out_event",
+        "recover_after_dried_out_event",
+        "stopped_drying_out_event",
+        "water_bottle_refill_time"
+      ]
+    },
+
+    // define a capacidade desta entidade de negociar com os jogadores.
+    "minecraft:economy_trade_table": {
+      "type": "object",
+      "properties": {
+        "convert_trades_economy": {"type": "boolean"},
+        "cured_discount": {"type": "array", "items": {"type": "integer", "default": [-5, -20]}},
+        "display_name": {"type": "string"},
+        "hero_demand_discount": {"type": "integer", "default": -4},
+        "max_cured_discount": {"type": "array", "items": {"type": "integer", "default": [-25, -63]}},
+        "max_nearby_cured_discount": {"type": "integer", "default": -200},
+        "nearby_cured_discount": {"type": "integer", "default": -25},
+        "new_screen": {"type": "boolean"},
+        "persist_trades": {"type": "boolean"},
+        "show_trade_screen": {"type": "boolean", "default": true},
+        "table": {"type": "string"},
+        "use_legacy_price_formula": {"type": "boolean"}
+      },
+      "required": ["display_name", "table", "new_screen"]
+    },
+
+    // desenvolvimento pendente
+    // é um componente que dispara um evento quando um conjunto de condições é atendido por outras entidades dentro do intervalo definido.
+    "minecraft:entity_sensor": {
+      "type": "object",
+      "properties": {
+        "event_filters": {"type": "null"},
+        "event": {"type": "string"},
+        "maximum_count": {"type": "integer", "default": -1},
+        "minimum_count": {"type": "integer", "default": 1},
+        "relative_range": {"type": "boolean", "default": true},
+        "require_all": {"type": "boolean"},
+        "sensor_range": {"type": "number", "default": 10.0}
+      },
+      "required": ["event", "event_filters", "maximum_count", "minimum_count", "relative_range", "require_all", "sensor_range"]
+    },
+
+    // cria um gatilho baseado nas condições do ambiente.
+    "minecraft:environment_sensor": {
+      "type": "object",
+      "properties": {
+        "triggers": {"type": "array", "items": {"type": "object",
+          "properties": {
+            "event": {"type": "string"},
+            "filters": {"type": "null"},
+            "target": {"type": "string"}
+          },
+          "required": ["event", "filters", "target"]
+        }},
+      },
+      "required": ["triggers"]
+    },
+
+    // permite à entidade equipar o equipamento desejado.
+    "minecraft:equip_item": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // define o comportamento de uma entidade por ter itens equipados a ela.
+    "minecraft:equippable": {
+      "type": "object",
+      "properties": {
+        "slots": {"type": "array", "items": {"type": "object", "properties": {
+          "accepted_items": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "interact_text": {"type": "string"},
+          "item": {"type": "string"},
+          "on_equip": {"type": "string"},
+          "on_uniquip": {"type": "string"},
+          "slot": {"type": "integer", "default": 0}
+        },
+          "required": ["accepted_items", "interact_text", "item", "on_equip", "on_uniquip", "slot"]
+        },
+          "minItems": 1
+        }
+      },
+      "required": ["slots"]
+    },
+
+    // define a quantidade de experiência recompensada quando a entidade morre ou é criada com sucesso.
+    "minecraft:experience_reward": {
+      "type": "object",
+      "properties": {
+        "on_bred": {"type": ["string", "integer"], "default": 0},
+        "on_death": {"type": ["string", "integer"], "default": 0}
+      },
+      "required": []
+    },
+
+    // define como a entidade explode.
+    "minecraft:explode": {
+      "type": "object",
+      "properties": {
+        "breaks_blocks": {"type": "boolean", "default": true},
+        "causes_fire": {"type": "boolean"},
+        "destroy_affected_by_griefing": {"type": "boolean"},
+        "fire_affected_by_griefing": {"type": "boolean"},
+        "fuse_length": {"type": "array", "default": [0.0, 0.0]},
+        "fuse_lit": {"type": "boolean"},
+        "max_resistance": {"type": "number", "default": 3.40282e+38},
+        "power": {"type": "number", "default": 3.0}
+      },
+      "required": []
+    },
+
+    // permite que as entidades se reúnam em grupos na água ou não.
+    "minecraft:flocking": {
+      "type": "object",
+      "properties": {
+        "block_distance": {"type": "number", "default": 0.0},
+        "block_weight": {"type": "number", "default": 0.0},
+        "breach_influence": {"type": "number", "default": 0.0},
+        "cohesion_threshold": {"type": "number", "default": 1.0},
+        "cohesion_weight": {"type": "number", "default": 1.0},
+        "goal_weight": {"type": "number", "default": 0.0},
+        "high_flock_limit": {"type": "integer", "default": 0},
+        "in_water": {"type": "boolean", "default": false},
+        "influence_radius": {"type": "number", "default": 0.0},
+        "innner_cohesion_threshold": {"type": "number", "default": 0.0},
+        "loner_chance": {"type": "number", "default": 0.0},
+        "low_flock_limit": {"type": "integer", "default": 0},
+        "match_variants": {"type": "boolean"},
+        "min_height": {"type": "number", "default": 0.0},
+        "max_heigth": {"type": "number", "default": 0.0},
+        "separation_threshold": {"type": "number", "default": 2.0},
+        "separation_weight": {"type": "number", "default": 1.0},
+        "use_center_of_mass": {"type": "boolean"}
+      },
+      "required": []
+    },
+
+    // define a forma como os genes e alelos de uma multidão são passados para seus descendentes e como esses traços se manifestam na criança.
+    "minecraft:genetics": {
+      "type": "object",
+      "properties": {
+        "genes": {"type": "array", "items": {"type": "object", "properties": {
+          "allele_range": {"type": "object", "properties": {
+            "range_max": {"type": "integer", "default": 0},
+            "range_min": {"type": "integer", "default": 0}
+          },
+            "required": ["range_max", "range_min"]
+          },
+          "genetic_variants": {"type": "array", "items": {"type": "object", "properties": {
+            "birth_event": {"type": "object", "properties": {
+              "event": {"type": "string"},
+              "target": {"type": "string"}
+            },
+              "required": ["event", "target"]
+            },
+            "both_allele": {"type": "integer", "default": -1},
+            "either_allele": {"type": "integer", "default": -1},
+            "hidden_allele": {"type": "integer", "default": -1},
+            "main_allele": {"type": "integer", "default": -1}
+          }},
+          "minItems": 1
+          },
+          "name": {"type": "string"}
+        }}},
+        "mutation_rate": {"type": "number", "default": 0.03125}
+      },
+      "required": []
+    },
+
+    // define conjuntos de itens que podem ser usados para acionar eventos quando usados nesta entidade. O item também será retirado e colocado no inventário da entidade.
+    "minecraft:giveable": {
+      "type": "object",
+      "properties": {
+        "cooldown": {"type": "number", "default": 0.0},
+        "items": {"type": ["array", "string"], "default": null},
+        "on_give": {"type": "string"}
+      },
+      "required": []
+    },
+
+    // mantém o controle do tamanho do grupo de entidades no raio fornecido.
+    "minecraft:group_size": {
+      "type": "object",
+      "properties": {
+        "filters": {"type": "null"},
+        "radius": {"type": "number", "default": 16.0}
+      },
+      "required": ["filters", "radius"]
+    },
+
+    // pode aumentar o crescimento da lavoura quando a entidade caminha sobre a lavoura.
+    "minecraft:grows_crop": {
+      "type": "object",
+      "properties": {
+        "chance": {"type": "number", "default": 0.0},
+        "charges": {"type": "integer", "default": 10}
+      },
+      "required": ["chance", "charges"]
+    },
+
+    // define as interações com esta entidade para curá-la.
+    "minecraft:healable": {
+      "type": "object",
+      "properties": {
+        "filters": {"type": "null"},
+        "force_use": {"type": "boolean"},
+        "items": {"type": "array", "items": {"type": "object", "properties": {
+          "heal_amount": {"type": "integer", "default": 1},
+          "item": {"type": "string"}
+        }}}
+      },
+      "required": ["items"]
+    },
+
+    // salva um ponto de interesse inicial para quando a entidade for gerada.
+    "minecraft:home": {
+      "type": "object",
+      "properties": {
+        "home_block_list": {"type": "array", "items": {"type": "string"}},
+        "restriction_radius": {"type": "integer", "default": -1}
+      },
+      "required": ["home_block_list", "restriction_radius"]
+    },
+
+    // define um conjunto de condições sob as quais uma entidade deve sofrer danos.
+    "minecraft:hurt_on_condition": {
+      "type": "object",
+      "properties": {"damage_conditions": {"type": "array", "items": {"type": "object", "properties": {
+        "filters": {"type": "null"},
+        "causes": {"type": "string"},
+        "damager": {"type": "integer"}
+      }}}},
+      "required": ["damage_conditions"]
+    },
+
+    //  verifica se a entidade está dentro de algum dos blocos listados.
+    "minecraft:inside_block_notifier": {
+      "type": "object",
+      "properties": {
+        "block_list": {"type": "array", "items": {"type": "object", "properties": {
+          "block": {"type": "object", "properties": {
+            "name": {"type": "string"},
+            "states": {"type": "object", "properties": {
+              "drag_down": {"type": "boolean"}
+            }}
+          }},
+          "entered_block_event": {"type": "object", "properties": {
+            "event": {"type": "string"},
+            "target": {"type": "string"}
+          }},
+          "exited_block_event": {"type": "object", "properties": {
+            "event": {"type": "string"},
+            "target": {"type": "string"}
+          }}
+        }}}
+      },
+      "required": ["block_list"]
+    },
+
+    // adiciona um cronômetro desde o último descanso para ver se os fantasmas devem aparecer
+    "minecraft:insomnia": {
+      "type": "object",
+      "properties": {
+        "days_until_insomnia": {"type": "number", "default": 3.0}
+      },
+      "required": []
+    },
+
+    // elimina o Ator imediatamente.
+    "minecraft:instant_despawn": {
+      "type": "object",
+      "properties": {
+        "remove_child_entities": {"type": "boolean"}
+      },
+      "required": ["remove_child_entities"]
+    },
+
+    //  define as interações com esta entidade.
+    "minecraft:interact": {
+      "type": "object",
+      "properties": {"interactions": {"type": "array", "items": {"type": "object", "properties": {
+        "add_items": {"type": "object", "properties": {
+          "table": {"type": "string"}
+        }},
+        "cooldown": {"type": "number", "default": 0.0},
+        "cooldown_after_being_attacked": {"type": "number", "default": 0.0},
+        "hurt_item": {"type": "integer", "default": 0},
+        "interact_text": {"type": "string"},
+        "on_interact": {"type": "string"},
+        "particle_on_start": {"type": "object", "properties": {
+          "particle_offset_towards_interactor": {"type": "boolean"},
+          "particle_type": {"type": "string"},
+          "particle_y_offset": {"type": "number", "default": 0.0}
+        }},
+        "play_sounds": {"type": "string"},
+        "spawn_entities": {"type": "string"},
+        "spawn_items": {"type": "object", "properties": {
+          "table": {"type": "string"}
+        }},
+        "swing": {"type": "boolean"},
+        "transform_to_item": {"type": "string"},
+        "use_item": {"type": "string"}
+      }}}
+      },
+      "required": ["interactions"]
+    },
+
+    // define como o estoque de uma entidade é gerenciado.
+    "minecraft:inventory": {
+      "type": "object",
+      "properties": {
+        "additional_slots_per_strength": {"type": "integer"},
+        "can_be_siphoned_from": {"type": "boolean"},
+        "container_type": {"type": "string"},
+        "inventory_size": {"type": "integer", "default": 5},
+        "private": {"type": "boolean"},
+        "restrict_to_owner": {"type": "boolean"}
+      },
+      "required": ["container_type", "inventory_size", "can_be_siphoned_from"]
+    },
+
+    // permite que uma entidade funcione como um hopperbloco.
+    "minecraft:item_hopper": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // define um controle de salto de tipo dinâmico que alterará as propriedades de salto com base no modificador de velocidade do mob.
+    "minecraft:jump.dynamic": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // dá à entidade a habilidade de pular.
+    "minecraft:jump.static": {
+      "type": "object",
+      "properties": {
+        "jump_power": {"type": "number", "default": 0.42}
+      },
+      "required": []
+    },
+
+    //  permite que esta entidade seja controlada e define as condições e eventos para esta entidade quando é controlada.
+    "minecraft:leashable": {
+      "type": "object",
+      "properties": {
+        "can_be_stolen": {"type": "boolean"},
+        "hard_distance": {"type": "number", "default": 6.0},
+        "max_distance": {"type": "number", "default": 10.0},
+        "on_leash": {"type": ["string", "object"], "properties": {
+          "event": {"type": "string"},
+          "target": {"type": "string"}
+        }},
+        "on_unleash": {"type": ["string", "object"], "properties": {
+          "event": {"type": "string"},
+          "target": {"type": "string"}
+        }},
+        "soft_distance": {"type": "number", "default": 4.0}
+      },
+      "required": [
+        "can_be_stolen",
+        "hard_distance",
+        "max_distance",
+        "on_leash",
+        "on_unleash",
+        "soft_distance"
+      ]
+    },
+
+    // define o comportamento quando outra entidade olha para esta entidade.
+    "minecraft:lookat": {
+      "type": "object",
+      "properties": {
+        "allow_invulnerable": {"type": "boolean"},
+        "filters": {"type": "null"},
+        "look_cooldown": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "default": [0, 0]},
+        "look_event": {"type": "string"},
+        "search_radius": {"type": "number", "default": 10.0},
+        "set_target": {"type": "boolean", "default": true}
+      },
+      "required": []
+    },
+
+    // gerencia a capacidade de negociação da entidade.
+    "minecraft:managed_wandering_trader": {
+      "type": "object",
+      "description": "Esse comportamento só pode ser usado pelo wandering_tradertipo de entidade.",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo wandering_tradertipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo wandering_tradertipo de entidade."]}
+      },
+      "required": ["info"]
+    },
+
+    // aplica um efeito mob a entidades que ficam dentro do alcance.
+    "minecraft:mob_effect": {
+      "type": "object",
+      "properties": {
+        "entity_filter": {"type": "null"},
+        "effect_range": {"type": "number", "default": 0.2},
+        "effect_time": {"type": "integer", "default": 10},
+        "mob_effect": {"type": "string"}
+      },
+      "required": ["entity_filter", "effect_range", "effect_time", "mob_effect"]
+    },
+
+    // permite que a multidão nade na água e ande na terra.
+    "minecraft:movement.amphibious": {
+      "type": "object",
+      "properties": {"max_turn": {"$ref": "#/$def/max_turn"}},
+      "required": ["max_turn"]
+    },
+
+    // define o movimento de uma entidade.
+    "minecraft:movement.basic": {
+      "type": "object",
+      "properties": {"max_turn": {"$ref": "#/$def/max_turn"}},
+      "required": ["max_turn"]
+    },
+
+    // faz a multidão voar.
+    "minecraft:movement.fly": {
+      "type": "object",
+      "properties": {"max_turn": {"$ref": "#/$def/max_turn"}},
+      "required": ["max_turn"]
+    },
+
+    // permite que uma multidão voe, nade, escale, etc.
+    "minecraft:movement.generic": {
+      "type": "object",
+      "properties": {"max_turn": {"$ref": "#/$def/max_turn"}},
+      "required": ["max_turn"]
+    },
+
+    // faz a multidão pairar.
+    "minecraft:movement.hover": {
+      "type": "object",
+      "properties": {"max_turn": {"$ref": "#/$def/max_turn"}},
+      "required": ["max_turn"]
+    },
+
+    // faz com que o mob salte enquanto se move com um atraso especificado entre os saltos.
+    "minecraft:movement.jump": {
+      "type": "object",
+      "properties": {
+        "max_turn": {"$ref": "#/$def/max_turn"},
+        "jump_dalay": {
+          "type": "array",
+          "items": {"type": "number"},
+          "default": [0.0, 0.0],
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "required": ["max_turn", "jump_dalay"]
+    },
+
+    //  faz com que a multidão pule enquanto se move.
+    "minecraft:movement.skip": {
+      "type": "object",
+      "properties": {"max_turn": {"$ref": "#/$def/max_turn"}},
+      "required": ["max_turn"]
+    },
+
+    //  faz com que a multidão balance de um lado para o outro dando a impressão de que está nadando.
+    "minecraft:movement.sway": {
+      "type": "object",
+      "properties": {
+        "max_turn": {"$ref": "#/$def/max_turn"},
+        "sway_amplitude": {"type": "number", "default": 0.0}
+      },
+      "required": ["max_turn", "sway_amplitude"]
+    },
+
+    // permite que esta entidade seja nomeada (por exemplo, usando uma etiqueta de nome).
+    "minecraft:nameable": {
+      "type": "object",
+      "properties": {
+        "allow_name_tag_renaming": {"type": "boolean", "default": true},
+        "always_show": {"type": "boolean"},
+        "default_trigger": {"type": "string"},
+        "name_actions": {"type": "object", "properties": {
+          "name_filter": {"type": "string"},
+          "on_named": {"type": "string"}
+        }}
+      },
+      "required": []
+    },
+
+    // permite que essa entidade gere caminhos que incluam paredes verticais como as aranhas baunilha.
+    "minecraft:navigation.climb": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // permite que esta entidade gere caminhos voando ao redor do ar como o Ghast regular.
+    "minecraft:navigation.float": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // permite que esta entidade gere caminhos no ar como os papagaios de baunilha fazem.
+    "minecraft:navigation.fly": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // permite que essa entidade gere caminhos andando, nadando, voando e/ou escalando e pulando para cima e para baixo em um quarteirão.
+    "minecraft:navigation.generic": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // permite que esta entidade gere caminhos no ar como fazem as abelhas baunilha. Impede que eles caiam do céu e façam movimentos preditivos.
+    "minecraft:navigation.hover": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // permite que esta entidade gere caminhos que incluam água.
+    "minecraft:navigation.swim": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // permite que esta entidade gere caminhos andando e pulando para cima e para baixo em um bloco como mobs regulares.
+    "minecraft:navigation.walk": {
+      "type": "object",
+      "$ref": "#/$def/minecraft:navigation",
+      "required": []
+    },
+
+    // desenvolvimento pendente!
+    // define o estado 'fora de controle' da entidade.
+    "minecraft:out_of_control": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // define o comportamento da entidade peek, definindo os eventos que devem ser chamados durante ela.
+    "minecraft:peek": {
+      "type": "object",
+      "properties": {
+        "on_close": {"type": "object", "$ref": "#/$def/event"},
+        "on_open": {"type": "object", "$ref": "#/$def/event"},
+        "on_target_open": {"type": "object", "$ref": "#/$def/event"}
+      },
+      "required": ["on_close", "on_open", "on_target_open"]
+    },
+
+    // define se uma entidade deve ser persistente no mundo do jogo.
+    "minecraft:persistent": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+
+    // define as propriedades físicas de uma entidade, inclusive se ela é afetada pela gravidade ou se colide com objetos.
+    "minecraft:physics": {
+      "type": "object",
+      "properties": {
+        "has_collision": {"type": "boolean", "default": true},
+        "has_gravity": {"type": "boolean", "default": true}
+      },
+      "required": ["has_collision", "has_gravity"]
+    },
+
+    // especifica informações de custo para mobs que preferem andar em caminhos preferidos.
+    "minecraft:preferred_path": {
+      "type": "object",
+      "properties": {
+        "default_block_cost": {"type": "number", "default": 0.0},
+        "jump_cost": {"type": "integer", "default": 0},
+        "max_fall_blocks": {"type": "integer", "default": 3},
+        "preferred_path_blocks": {"type": "array", "items": {"type": "object",
+          "properties": {
+            "cost": {"type": "integer"},
+            "blocks": {"type": "array", "items": {"type": "string"}}
+          },
+          "required": ["cost", "blocks"]
+        }}
+      },
+      "required": ["default_block_cost", "jump_cost", "max_fall_blocks", "preferred_path_blocks"]
+    },
+
+    // permite que a entidade seja uma entidade lançada.
+    "minecraft:projectile": {
+      "type": "object",
+      "properties": {
+        "angle_offset": {"type": "number", "default": 0.0},
+        "catch_fire": {"type": "boolean"},
+        "crit_particle_on_hurt": {"type": "boolean"},
+        "destroy_on_hurt": {"type": "boolean"},
+        "filter": {"type": "string"},
+        "fire_affected_by_griefing": {"type": "boolean"},
+        "gravity": {"type": "number", "default": 0.05},
+        "hit_sound": {"type": "string"},
+        "homing": {"type": "boolean"},
+        "inertia": {"type": "number", "default": 0.99},
+        "is_dangerous": {"type": "boolean"},
+        "knockback": {"type": "boolean", "default": true},
+        "lightning": {"type": "boolean"},
+        "liquid_inertia": {"type": "number", "default": 0.6},
+        "multiple_targets": {"type": "boolean", "default": true},
+        "offset": {"type": "array", "items": {
+          "type": "number"}, "default": [0.0, 0.0, 0.0], "minItems": 3, "maxItems": 3
+        },
+        "on_fire_time": {"type": "number", "default": 5.0},
+        "particle": {"type": "string", "default": "iconcrack"},
+        "potion_effect": {"type": "integer", "default": -1},
+        "power": {"type": "number", "default": 1.3},
+        "reflect_on_hurt": {"type": "boolean"},
+        "semi_random_diff_damage": {"type": "boolean"},
+        "shoot_sound": {"type": "string"},
+        "shoot_target": {"type": "boolean", "default": true},
+        "should_bounce": {"type": "boolean"},
+        "splash_potion": {"type": "boolean"},
+        "splash_range": {"type": "number", "default": 4.0},
+        "uncertainty_base": {"type": "number", "default": 0.0},
+        "uncertainty_multiplier": {"type": "number", "default": 0.0}
+      },
+      "required": []
+    },
+
+    // define o que pode empurrar uma entidade entre outras entidades e pistões.
+    "minecraft:pushable": {
+      "type": "object",
+      "properties": {
+        "is_pushable": {"type": "boolean", "default": true},
+        "is_pushable_by_piston": {"type": "boolean", "default": true}
+      },
+      "required": ["is_pushable", "is_pushable_by_piston"]
+    },
+
+    // tenta acionar um ataque no local da entidade.
+    "minecraft:raid_trigger": {
+      "type": "object",
+      "properties": {
+        "triggered_event": {"type": ["string", "object"], "$ref": "#/$def/event_and_target"}
+      },
+      "required": ["triggered_event"]
+    },
+
+    // define o movimento da entidade nos trilhos. Uma entidade com este componente só pode se mover no trilho
+    "minecraft:rail_movement": {
+      "type": "object",
+      "properties": {"max_speed": {"type": "number", "default": 0.4}},
+      "required": []
+    },
+
+    // define o comportamento da entidade ao passar por um trilho ativado ou desativado.
+    "minecraft:rail_sensor": {
+      "type": "object",
+      "properties": {
+        "check_block_types": {"type": "boolean"},
+        "eject_on_activate": {"type": "boolean", "default": true},
+        "eject_on_deactivate": {"type": "boolean"},
+        "on_activate": {"type": "string"},
+        "on_deactivate": {"type": "string"},
+        "tick_command_block_on_activate": {"type": "boolean", "default": true},
+        "tick_command_block_on_deactivate": {"type": "boolean"}
+      },
+      "required": []
+    },
+
+    // define a resposta do saqueador ao bloqueio de seu ataque corpo a corpo.
+    "minecraft:ravager_blocked": {
+      "type": "object",
+      "properties": {
+        "knockback_strength": {"type": "number", "default": 3.0},
+        "reaction_choices": {"type": "array", "items": {"type": "object", "properties": {
+          "weight": {"type": "integer", "default": 1},
+          "value": {"type": "object", "$ref": "#/$def/event_and_target"}
+        },
+          "required": ["weight"]
+        }}
+      },
+      "required": ["knockback_strength", "reaction_choices"]
+    },
+
+    // determina se esta entidade pode ser montada. Permite especificar as diferentes posições e quantidade de assentos.
+    "minecraft:rideable": {
+      "type": "object",
+      "properties": {
+        "controlling_seat": {"type": "integer", "default": 0},
+        "crouching_skip_interact": {"type": "boolean", "default": true},
+        "family_types": {"type": "array"},
+        "interact_text": {"type": "string"},
+        "priority": {"type": "integer"},
+        "pull_in_entities": {"type": "boolean"},
+        "rider_can_interact": {"type": "boolean"},
+        "seat_count": {"type": "integer", "default": 1},
+        "seats": {"type": "array", "items": {"type": "object", "properties": {
+          "lock_rider_rotation": {"type": "number", "default": 181.0},
+          "max_rider_count": {"type": ["string","integer"], "default": "seat_count"},
+          "min_rider_count": {"type": "integer", "default": 0},
+          "position": {"type": "array", "items": {"type": "number"}, "default": [0.0, 0.0, 0.0]},
+          "rotate_rider_by": {"type": ["integer","string"], "default": 0}
+        },
+          "required": [
+            "lock_rider_rotation",
+            "max_rider_count",
+            "min_rider_count",
+            "position",
+            "rotate_rider_by"
+          ]
+        }}
+      },
+      "required": []
+    },
+
+    // permite ao jogador detectar e manobrar no bloco de andaime.
+    "minecraft:scaffolding_climber": {
+      "type": "object",
+      "properties": {"info": {"type": "string", "default": "foi preterido e substituído por minecraft:block_climber", "enum": ["oi preterido e substituído por minecraft:block_climber"]}},
+      "required": ["info"]
+    },
+
+    // define a interpolação de tamanho da entidade com base na idade da entidade.
+    "minecraft:scale_by_age": {
+      "type": "object",
+      "properties": {
+        "end_scale": {"type": "number", "default": 1.0},
+        "start_acale": {"type": "number", "default": 1.0}
+      },
+      "required": ["start_acale", "end_scale"]
+    },
+
+    // dispara eventos de máfia agendados na hora do dia.
+    "minecraft:scheduler": {
+      "type": "object",
+      "properties": {
+        "scheduled_events": {"type": "array", "items": {"type": "object", "properties": {
+          "filters": {},
+          "event": {"$ref": "#/$def/event_and_target"}
+        }}}
+      },
+      "required": ["scheduled_events"]
+    },
+
+    // define uma lista de itens que a máfia quer compartilhar ou pegar.
+    "minecraft:shareables": {
+      "type": "object",
+      "properties": {
+        "all_items": {"type": "boolean"},
+        "all_items_max_amount": {"type": "integer", "default": -1},
+        "all_items_surplus_amount": {"type": "integer", "default": -1},
+        "all_items_want_amount": {"type": "integer", "default": -1},
+        "items": {"type": "array", "items": {"type": "object", "properties": {
+          "admire": {"type": "boolean"},
+          "barter": {"type": "boolean"},
+          "consume_item": {"type": "boolean"},
+          "craft_into": {"type": "string"},
+          "item": {"type": "string"},
+          "max_amount": {"type": "integer"},
+          "pickup_limit": {"type": "integer"},
+          "priority": {"type": "integer"},
+          "stored_in_inventory": {"type": "boolean"},
+          "surplus_amount": {"type": "integer"},
+          "want_amount": {"type": "integer"}
+        },
+          "required": ["item", "want_amount", "surplus_amount", "priority"],
+        }},
+      },
+      "required": []
+    },
+
+    // define o comportamento de ataque à distância da entidade.
+    "minecraft:shooter": {
+      "type": "object",
+      "properties": {
+        "aux_val": {"type": "integer", "default": -1},
+        "def": {"type": "string"}
+      },
+      "required": ["def"]
+    },
+
+    // define o estado da entidade sit.
+    "minecraft:sittable": {
+      "type": "object",
+      "properties": {
+        "sit_event": {"type": "string"},
+        "stand_event": {"type": "string"}
+      },
+      "required": []
+    },
+
+    // adiciona um temporizador após o qual esta entidade irá gerar outra entidade ou item (semelhante ao comportamento de postura de ovos da galinha da baunilha).
+    "minecraft:spawn_entity": {
+      "type": "object",
+      "properties": {"entities": {"type": "array", "items": {"type": "object", "properties": {
+        "filters": {},
+        "max_wait_time": {"type": "integer", "default": 600},
+        "min_wait_time": {"type": "integer", "default": 300},
+        "num_to_spawn": {"type": "integer", "default": 1},
+        "should_leash": {"type": "boolean"},
+        "single_use": {"type": "boolean"},
+        "spawn_entity": {"type": "string"},
+        "spawn_event": {"type": ["string", "object"], "default": "minecraft:entity_born", "$ref": "#/$def/event_and_target"},
+        "spawn_item": {"type": "string", "default": "egg"},
+        "spawn_method": {"type": "string", "default": "born"},
+        "spawn_sound": {"type": "string", "default": "plop"}
+      }}}},
+      "required": ["entities"]
+    },
+
+    // define as regras para um mob ser domado pelo jogador.
+    "minecraft:tameable": {
+      "type": "object",
+      "properties": {
+        "probability": {"type": "number", "default": 1},
+        "tame_event": {
+          "type": "array", "items": {"type": ["string", "object"], "$ref": "#/$def/event_and_target"}
+        },
+        "tame_items": {
+          "type": ["string", "array"], "default": "carrot", "items": {"type": "string"}
+        }
+      },
+      "required": ["probability", "tame_event", "tame_items"]
+    },
+
+    // permite que a Entidade seja domada montando-a.
+    "minecraft:tamemount": {
+      "type": "object",
+      "properties": {
+        "attempt_temper_mod": {"type": "integer", "default": 5},
+        "autoRejectItems": {"type": "array", "items": {"type": "object", "properties": {"item": {"type": "string"}}, "required": ["item"]}},
+        "feed_items": {"type": "array", "items": {"type": "object",
+          "properties": {
+            "item": {"type": "string"},
+            "temper_mod": {"type": "integer", "default": 3}
+          },
+          "required": ["item"]
+        }},
+        "feed_text": {"type": "string"},
+        "max_temper": {"type": "integer", "default": 100},
+        "min_temper": {"type": "integer", "default": 0},
+        "ride_text": {"type": "string"},
+        "tame_event": {'type': ["object", "string"], "$ref": "#/$def/event_and_target"}
+      },
+      "required": [
+        "attempt_temper_mod",
+        "autoRejectItems",
+        "feed_items",
+        "feed_text",
+        "max_temper",
+        "min_temper",
+        "ride_text",
+        "tame_event"
+      ]
+    },
+
+    // define o alcance da entidade dentro do qual ela pode ver ou sentir outras entidades para atingi-las.
+    "minecraft:target_nearby_sensor": {
+      "type": "object",
+      "properties": {
+        "inside_range": {"type": "number", "default": 1.0},
+        "must_see": {'type': "boolean"},
+        "on_inside_range": {"type": ["object", "string"], "$ref": "#/$def/event_and_target"},
+        "on_outside_range": {"type": ["object", "string"], "$ref": "#/$def/event_and_target"},
+        "on_vision_lost_inside_range": {"type": ["object", "string"], "$ref": "#/$def/event_and_target"},
+        "out_side_range": {"type": "number", "default": 5.0}
+      },
+      "required": [
+        "inside_range",
+        "must_see",
+        "on_inside_range",
+        "on_outside_range",
+        "on_vision_lost_inside_range",
+        "out_side_range"
+      ]
+    },
+
+    // define o comportamento de teletransporte de uma entidade.
+    "minecraft:teleport": {
+      "type": "object",
+      "properties": {
+        "dark_teleport_chance": {"type": "number", "default": 0.01},
+        "light_teleport_chance": {"type": "number", "default": 0.01},
+        "max_random_teleport_time": {"type": "number", "default": 20.0},
+        "min_random_teleport_time": {'type': "number", "default": 0.0},
+        "random_teleport_cube": {
+          'type': "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}, "default": [32, 16, 32]
+        },
+        "random_teleports": {'type': "boolean", "default": true},
+        "target_distance": {"type": "number", "default": 16.0},
+        "target_teleport_chance": {'type': "number", "default": 1.0}
+      },
+      "required": []
+    },
+
+    // define se a entidade marca o mundo e o raio ao seu redor para marcar.
+    "minecraft:tick_world": {
+      "type": "object",
+      "properties": {
+        "distance_to_players": {"type": "number", "default": 128.0},
+        "never_despawn": {"type": "boolean", "default": true},
+        "radius": {"type": "integer", "default": 2}
+      },
+      "required": ["distance_to_players", "radius", "never_despawn"]
+    },
+
+    // adiciona um temporizador após o qual um evento será acionado.
+    "minecraft:timer": {
+      "type": "object",
+      "properties": {
+        "looping": {"type": "boolean", "default": true},
+        "randomInterval": {"type": "boolean", "default": true},
+        "random_time_choices": {"type": "array", "default": []},
+        "time": {
+          "type": "array", "items": {"type": "number"}, "default": [0.0, 0.0], "minItems": 2, "maxItems": 2
+        },
+        "time_down_event": {"type": "object", "properties": {
+          "event": {"$ref": "#/$def/event"}
+        }}
+      },
+      "required": []
+    },
+
+    // define a capacidade desta entidade de negociar com os jogadores.
+    "minecraft:trade_table": {
+      "type": "object",
+      "properties": {
+        "convert_trades_economy": {"type": "boolean"},
+        "display_name": {"type": "string"},
+        "new_screen": {"type": "boolean"},
+        "persist_trades": {'type': "boolean"},
+        "table": {"type": "string"}
+      },
+      "required": ["display_name", "table", "convert_trades_economy"]
+    },
+
+    // faz com que uma entidade deixe um rastro de blocos enquanto se move pelo mundo
+    "minecraft:trail": {
+      "type": "object",
+      "properties": {
+        "block_type": {"type": "string", "default": "air"},
+        "spawn_filter": {},
+        "spawn_offset": {
+          "type": "array", "items": {"type": "number"}, "default": [0, 0, 0], "maxItems": 3, "minItems": 3
+        }
+      },
+      "required": ["block_type"]
+    },
+
+    // define a transformação de uma entidade da definição atual para outra.
+    "minecraft:transformation": {
+      "type": "object",
+      "properties": {
+        "add": {"type": "object", "properties": {
+          "component_groups": {"type": "array"}
+        }},
+        "begin_transform_sound": {"type": "string"},
+        "drop_equipment": {"type": "boolean"},
+        "drop_inventory": {'type': "boolean"},
+        "into": {"type": "string"},
+        "keep_level": {"type": "boolean"},
+        "keep_owner": {"type": "boolean"},
+        "preserve_equipment": {"type": "boolean"},
+        "transformation_sound": {"type": "string"},
+        "delay": {"type": "object", "properties": {
+          "block_assist_chance": {"type": "number", "default": 0.0},
+          "block_chance": {"type": "number", "default": 0.0},
+          "block_max": {"type": "integer"},
+          "block_radius": {"type": "integer"},
+          "block_types": {"type": "array"},
+          "value": {"type": "number", "default": 0.0}
+        }}
+      },
+      "required": []
+    },
+
+    // define as regras para um mob confiar nos jogadores.
+    "minecraft:trusting": {
+      "type": "object",
+      "properties": {
+        "probability": {"type": "number", "default": 1.00},
+        "trust_event": {
+          "type": ["object", "string"], "$ref": "#/$def/event_and_target"
+        },
+        "trust_items": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": ["probability", "trust_event", "trust_items"]
+    },
+
+    // define a velocidade com que uma entidade pode se mover através da água.
+    "minecraft:water_movement": {
+      "type": "object",
+      "properties": {
+        "drag_factor": {"type": "number", "default": 0.8}
+      },
+      "required": ["drag_factor"]
+    },
+
+// ================================================== Metas IA ===========================================================
+
+    // permite que uma entidade admire um objeto que está segurando.
+    "minecraft:behavior.admire_item": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "admire_item_sound": {"type": "string"},
+        "sound_interval": {}
+      },
+      "required": ["priority", "admire_item_sound", "sound_interval"]
+    },
+
+    // permite que uma entidade solte um item em troca após um jogador oferecer uma troca, soltando um item específico perto da entidade.
+    "minecraft:behavior.barter": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade reaja inclinando a cabeça quando um jogador está segurando itens selecionados nas proximidades.
+    "minecraft:behavior.beg": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "items": {"type": "array", "items": {"type": "string"}},
+        "look_distance": {"type": "number", "default": 8.0},
+        "look_time": {"type": "array", "default": [2, 4]}
+      },
+      "required": ["priority", "items", "look_distance", "look_time"]
+    },
+
+    //  permite que uma entidade derrube portas.
+    "minecraft:behavior.break_door": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade cruze com outras entidades que foram atribuídas.
+    "minecraft:behavior.breed": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["speed_multiplier"]
+    },
+
+    // permite que uma entidade salte para cima e para baixo enquanto toca um som
+    "minecraft:behavior.celebrate": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "celebration_sound": {"type": "string"},
+        "duration": {"type": "number", "default": 1.0},
+        "jump_intervel": {
+          "type": ["object","array"], "items": {"type": "integer"}, "default": [0, 0],
+          "properties": {"range_min": {"type": "number"}, "range_max": {"type": "number"}}
+        },
+        "on_celebration_end_event": {"$ref": "#/$def/event_and_target"},
+        "sound_interval": {
+          "type": ["object","array"], "items": {"type": "integer"}, "default": [0, 0],
+          "properties": {"range_min": {"type": "number"}, "range_max": {"type": "number"}}
+        }
+      },
+      "required": ["priority", "celebration_sound", "duration", "jump_intervel", "on_celebration_end_event", "sound_interval"]
+    },
+
+    // permite que uma entidade reaja com um evento quando um alvo confiável é atacado.
+    "minecraft:behavior.defend_trusted_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "aggro_sound": {"type": "string"},
+        "attack_interval": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "must_see": {"type": "boolean"},
+        "must_see_forget_duration": {"type": "number", "default": 3.0},
+        "within_radius": {"type": "number", "default": 0.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade interaja com portas.
+    "minecraft:behavior.door_interact": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+    // controla o estado de morte e a animação da entidade.
+    "minecraft:behavior.dragondeath": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo ender_dragontipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo ender_dragontipo de entidade."]}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade voe em um círculo ao redor do pódio central localizado em The End.
+    "minecraft:behavior.dragonholdingpattern": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo ender_dragontipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo ender_dragontipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade pare de voar e faça a transição para o modo empoleirado.
+    "minecraft:behavior.dragonlanding": {
+      "type": "object",
+      "properties": {"info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo ender_dragontipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo ender_dragontipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade procure um jogador para atacar enquanto estiver no modo poleiro.
+    "minecraft:behavior.dragonscanning": {
+      "type": "object",
+      "properties": {"info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo ender_dragontipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo ender_dragontipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade saia do modo poleiro e volte a voar.
+    "minecraft:behavior.dragontakeoff": {
+      "type": "object",
+      "properties": {"info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo ender_dragontipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo ender_dragontipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade beba uma poção como reação a um evento ou quando as condições definidas forem atendidas.
+    "minecraft:behavior.drink_potion": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_modifier": {"type": "number", "default": 0.0},
+        "potions": {"type": "array", "items": {"type": "object", "properties": {
+          "chance": {"type": "number", "default": 1.0},
+          "filters": {},
+          "id": {"type": "integer", "default": -1}
+        }}}
+      },
+      "required": ["priority", "speed_modifier", "potions"]
+    },
+
+    // permite que uma entidade beba uma poção como reação a um evento ou quando as condições definidas forem atendidas.
+    "minecraft:behavior.eat_carried_item": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "delay_before_eating": {"type": "number"}
+      },
+      "required": ["priority", "delay_before_eating"]
+    },
+
+    // permite que a entidade solte o bloco que está segurando no momento.
+    "minecraft:behavior.enderman_leave_block": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo endermantipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo endermantipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    //  permite que a entidade pegue um bloco próximo e carregue o bloco em suas mãos.
+    "minecraft:behavior.enderman_take_block": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo endermantipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo endermantipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que a entidade pegue um bloco próximo e carregue o bloco em suas mãos.
+    "minecraft:behavior.explore_outskirts": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "explore_dist": {"type": "number", "default": 5.0},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "wait_time": {"type": "integer", "default": 0}
+      },
+      "required": ["priority", "explore_dist", "speed_multiplier", "wait_time"]
+    },
+
+    // permite que uma entidade localize sombra no mundo.
+    "minecraft:behavior.find_cover": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number", "default": 0.0},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority", "cooldown_time", "speed_multiplier"]
+    },
+
+    // permite que uma entidade encontre outra entidade para montar.
+    "minecraft:behavior.find_mount": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "avoid_water": {'type': "boolean"},
+        "mount_distance": {"type": "number", "default": -1.0},
+        "start_delay": {"type": "integer"},
+        "target_needed": {"type": "boolean"},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority", "within_radius"]
+    },
+
+    // permite que uma entidade localize e viaje para o ponto de interesse mais próximo rotulado como ruinou shipwreck
+    "minecraft:behavior.find_underwater_treasure": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "stop_distance": {"type": "number", "default": 2.0}
+      },
+      "required": ["priority"]
+    },
+
+    // fará com que a entidade evite ativamente a luz do sol.
+    "minecraft:behavior.flee_sun": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority", "speed_multiplier"]
+    },
+
+    // permite que uma entidade flutue em uma direção aleatória, semelhante à ghastentidade.
+    "minecraft:behavior.float_wander": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "float_duration": {
+          "type": "array", "items": {"type": "number"}, "default": [0.0, 0.0], "minItems": 2, "maxItems": 2
+        },
+        "must_reach": {"type": "boolean"},
+        "random_reselect": {"type": "boolean"},
+        "xz_dist": {"type": "integer", "default": 10},
+        "y_dist": {"type": "integer", "default": 7},
+        "y_offset": {"type": "number", "default": 0.0}
+      },
+      "required": ["priority", "must_reach"]
+    },
+
+    // permite que uma entidade flutue na água.
+    "minecraft:behavior.float": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade seja liderada com um Leaditem. Liderar a entidade na verdade sinaliza até dez entidades próximas que foram definidas na entity_typesvariável para seguirem umas às outras, formando uma caravana.
+    "minecraft:behavior.follow_caravan": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "entity_count": {"type": "integer", "default": 1},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade siga e se reúna em torno de outros mobs do mesmo tipo.
+    "minecraft:behavior.follow_mob": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "search_range": {"type": "integer", "default": 5},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "stop_distance": {"type": "number", "default": 2.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade siga um jogador marcado.
+    "minecraft:behavior.follow_owner": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "start_distance": {"type": "number", "default": 10.0},
+        "stop_distance": {"type": "number", "default": 2.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade que foi marcada como um bebê siga seus pais.
+    "minecraft:behavior.follow_parent": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": "1.0"}
+      },
+      "required": ["priority", "speed_multiplier"]
+    },
+
+    // permite que uma entidade siga um capitão alvo.
+    "minecraft:behavior.follow_target_captain": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "follow_distance": {"type": "number", "default": 0.0},
+        "within_radius": {"type": "number", "default": 0.0}
+      },
+      "required": ["priority", "follow_distance", "within_radius"]
+    },
+
+    // permite que uma entidade viaje de volta para onde foi gerada e acione eventos na chegada.
+    "minecraft:behavior.go_home": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "interval": {"type": "integer", "default": 120},
+        "on_home": {"type": "string"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority", "goal_radius", "intervel", "on_home", "speed_multiplier"]
+    },
+
+    // permite que uma entidade navegue para um ponto de interesse específico que está vinculado à entidade.
+    "minecraft:behavior.hide": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "duration": {"type": "number", "default": 1.0},
+        "poi_type": {"type": "string"},
+        "speed_multiplier": {"type": "number", 'default': 1.0},
+        "timeout_cooldown": {"type": "number", 'default': 8.0}
+      },
+      "required": ["priority", "speed_multiplier", "duration", "timeout_cooldown"]
+    },
+
+    // permite que uma entidade pare em sua localização atual, vire-se para enfrentar uma multidão que está mirando e reaja com um evento.
+    "minecraft:behavior.hold_ground": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "broadcast": {"type": "boolean"},
+        "broadcast_range": {"type": "number"},
+        "min_radius": {"type": "number", "default": 10.0},
+        "within_radius_event": {"$ref": "#/$def/event_and_target"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade reaja quando atingida por um alvo definido.
+    "minecraft:behavior.hurt_by_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "alert_same_type": {"type": "boolean"},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "hurt_owner": {"type": "boolean"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade olhe e inspecione uma estante.
+    "minecraft:behavior.inspect_bookshelf": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "search_count": {"type": "integer", "default": 10},
+        "search_height": {"type": "integer", "default": 1},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority", "goal_radius", "search_count", "search_height", "speed_multiplier", "search_range"]
+    },
+
+    // permite que a multidão procure um bloco para pular e, em seguida, pule para esse bloco.
+    "minecraft:behavior.jump_to_block": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "searchWidth": {"type": "integer", "default": 8},
+        "searchHeight": {"type": "integer", "default": 10},
+        "minPathLength": {"type": "integer", "default": 5},
+        "minDistance": {"type": "integer", "default": 2},
+        "scaleFactor": {"type": "number", "default": 0.7},
+        "maxVelocity": {"type": "number", "default": 1.5},
+        "coolDownTimeRange": {"type": "array", "default": [10.0, 20.0], "items": {"type": "number"}, "maxItems": 2, "minItems": 2}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade emita um efeito de rugido que repele outras entidades em um raio definido de onde o rugido foi emitido.
+    "minecraft:behavior.knockback_roar": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "attack_time": {"type": "number", "default": 0.5},
+        "cooldown_time": {"type": "number", "default": 0},
+        "duration": {"type": "number", "default": 1.0},
+        "knockback_damage": {"type": "integer", "default": 6},
+        "knockback_range": {"type": "integer", "default": 4},
+        "knockback_horizontal_strength": {"type": "integer", "default": 4},
+        "knockback_vertical_strength": {"type": "integer", "default": 4},
+        "knockback_filters": {},
+        "damage_filters": {},
+        "on_roar_end": {"type": "string"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se deite aleatoriamente por um período de tempo.
+    "minecraft:behavior.lay_down": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "interval": {"type": "integer", "default": 120},
+        "random_stop_interval": {"type": "integer", "default": 120}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade ponha ovos.
+    "minecraft:behavior.lay_egg": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "on_lay": {"$ref": "#/$def/event_and_target"},
+        "search_height": {"type": "integer", "default": 1},
+        "search": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade salte em direção a um alvo.
+    "minecraft:behavior.leap_at_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "must_be_on_ground": {"type": "boolean", "default": true},
+        "set_persistent": {"type": "boolean"},
+        "yd": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade olhe para uma entidade específica girando a pose do osso da cabeça dentro de um limite definido.
+    "minecraft:behavior.look_at_entity": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "angle_of_view_horizontal": {"type": "integer", "default": 360},
+        "angle_of_view_vertical": {"type": "integer", "default": 360},
+        "filters": {},
+        "look_distance": {"type": "number", "default": 8.0},
+        "look_time": {
+          "type": "array", "items": {"type": "integer"}, "default": [2, 4], "minItems": 2, "maxItems": 2
+        },
+        "probability": {"type": "number", "default": 0.02}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade olhe para o jogador girando a pose do osso da cabeça dentro de um limite definido
+    "minecraft:behavior.look_at_player": {
+      "type": "object",
+      "$ref": "#/$def/look_at"
+    },
+
+    // permite que uma entidade olhe para o alvo girando a pose do osso da cabeça dentro de um limite definido.
+    "minecraft:behavior.look_at_target": {
+      "type": "object",
+      "$ref": "#/$def/look_at"
+    },
+
+    //  permite que uma entidade veja o jogador que está atualmente negociando com a entidade.
+    "minecraft:behavior.look_at_trading_player": {
+      "type": "object",
+      "$ref": "#/$def/look_at"
+    },
+
+    // permite que uma entidade interaja com outras entidades semelhantes para produzir uma descendência.
+    "minecraft:behavior.make_love": {
+      "type": "object",
+      "properties": {"priority": {"type": "integer"}},
+      "required": ["priority"]
+    },
+
+    // permite que as entidades façam ataques corpo a corpo de combate corpo a corpo.
+    "minecraft:behavior.melee_attack": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "melee_fov": {"type": "number", "default": 90.0},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "track_target": {'type': "boolean"},
+        "attack_types": {"type": "string"},
+        "random_stop_interval": {"type": "integer"},
+        "reach_multiplier": {"type": "number", "default": 2.0},
+        "attack_once": {'type': "boolean"},
+        "require_complete_path": {'type': "boolean"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade navegue até o ponto de interesse do sino da vila e interaja com outras entidades que foram atribuídas.
+    "minecraft:behavior.mingle": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number"},
+        "duration": {"type": "number", "default": 1.0},
+        "mingle_distance": {"type": "number", "default": 2.0},
+        "mingle_partner_type": {"type": "array"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se mova por conta própria enquanto montada. minecraft:behavior.mount_pathingtambém permitirá que uma entidade alveje outra entidade para um ataque.
+    "minecraft:behavior.mount_pathing": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "target_dist": {"type": "number"},
+        "track_target": {"type": "boolean"}
+      },
+      "required": ["priority", "speed_multiplier", "target_dist", "track_target"]
+    },
+
+    // permite que uma entidade busque abrigo dentro de uma vila entrando em um prédio.
+    "minecraft:behavior.move_indoors": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "timeout_cooldown": {"type": "number", "default": 8.0}
+      },
+      "required": ["priority", "speed_multiplier", "timeout_cooldown"]
+    },
+
+    // permite que uma entidade navegue em torno de uma vila criando um caminho para patrulhar.
+    "minecraft:behavior.move_through_village": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "only_at_night": {"type": "boolean"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority", "only_at_night", "speed_multiplier"]
+    },
+
+    // permite que uma entidade se mova para terra quando estiver em um meio não terrestre, como lava ou água.
+    "minecraft:behavior.move_to_land": {
+      "type": "object",
+      "$ref": "#/$def/move_to"
+    },
+
+    // permite que uma entidade se mova para lava quando estiver em terra.
+    "minecraft:behavior.move_to_lava": {
+      "type": "object",
+      "$ref": "#/$def/move_to"
+    },
+
+    // permite que uma entidade se mova para um ponto de interesse que foi definido.
+    "minecraft:behavior.move_to_poi": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "poi_type": {"type": "string"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se mova para um bloco aleatório dentro de um raio definido.
+    "minecraft:behavior.move_to_random_block": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "block_distance": {"type": "number", "default": 16.0},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade viaje para uma coordenada x,y,z aleatória em uma vila
+    "minecraft:behavior.move_to_village": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se mova para a água quando estiver em terra.
+    "minecraft:behavior.move_to_water": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "search_count": {"type": "integer", "default": 10},
+        "search_height": {"type": "integer", "default": 1},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se mova em direção a um alvo.
+    "minecraft:behavior.move_towards_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "within_radius": {"type": "number"},
+        "speed_multiplier": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    //permite que uma entidade cochile em um local distante de outras entidades.
+    "minecraft:behavior.nap": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_max": {"type": "number"},
+        "cooldown_min": {"type": "number"},
+        "mob_detect_dist": {"type": "number", "default": 6.0},
+        "mob_detect_height": {"type": "number", "default": 6.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade pare em sua localização atual, vire-se para enfrentar uma multidão que está mirando e reaja com um evento.
+    "minecraft:behavior.nearest_attackable_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "attack_interval": {"type": "integer"},
+        "attack_interval_min": {"type": "integer"},
+        "attack_owner": {"type": "boolean"},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "must_reach": {"type": "boolean"},
+        "must_see": {"type": "boolean"},
+        "must_see_forget_duration": {"type": "number", "default": 3.0},
+        "persist_time": {"type": "number"},
+        "reselect_targets": {"type": "boolean"},
+        "scan_interval": {"type": "integer", "default": 10},
+        "set_persistent": {"type": "boolean"},
+        "target_invisible_multiplier": {"type": "number", "default": 0.7},
+        "target_search_height": {"type": "number", "default": -1.0},
+        "target_sneak_visibility_multiplier": {"type": "number", "default": 0.8},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade segmente e priorize o destino válido mais próximo.
+    "minecraft:behavior.nearest_prioritized_attackable_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "attack_interval": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "must_reach": {"type": "boolean"},
+        "must_see": {"type": "boolean"},
+        "must_see_forget_duration": {"type": "number", "default": 3.0},
+        "persist_time": {"type": "number", "default": 0.0},
+        "reselect_targets": {"type": "boolean"},
+        "scan_interval": {"type": "integer", "default": 10},
+        "set_persistent": {"type": "boolean"},
+        "target_search_height": {"type": "number", "default": -1.0},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade fique no lugar, semelhante à pose de animação da entidade ocelot.
+    "minecraft:behavior.ocelot_sit_on_block": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade ofereça uma flor a outra entidade
+    "minecraft:behavior.offer_flower": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "info": {"type": "string", "default": "minecraft:behavior.offer_flowerexige que um item de flor seja mantido pela entidade. Esse comportamento só pode ser usado pelos villagertipos de entidade.", "enum": ["minecraft:behavior.offer_flowerexige que um item de flor seja mantido pela entidade. Esse comportamento só pode ser usado pelos villagertipos de entidade."]}
+      },
+      "required": ["info","priority"]
+    },
+
+    // permite que uma entidade interaja e abra uma porta.
+    "minecraft:behavior.open_door": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "close_door_after": {"type": "boolean", "default": true}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade reaja quando o proprietário é atingido por um alvo.
+    "minecraft:behavior.owner_hurt_by_target": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": " requer que um jogador seja definido como o proprietário por meio de domar ou comando de console para funcionar corretamente.", "enum": [" requer que um jogador seja definido como o proprietário por meio de domar ou comando de console para funcionar corretamente."]},
+        "priority": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade reaja quando o proprietário atinge um alvo.
+    "minecraft:behavior.owner_hurt_target": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": " requer que um jogador seja definido como o proprietário por meio de domar ou comando de console para funcionar corretamente.", "enum": [" requer que um jogador seja definido como o proprietário por meio de domar ou comando de console para funcionar corretamente."]},
+        "priority": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade reaja quando recebe dano.
+    "minecraft:behavior.panic": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "damage_sources": {"type": "array"},
+        "force": {"type": "boolean"},
+        "ignore_mob_damage": {"type": "boolean"},
+        "prefer_water": {"type": "boolean"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade espie.
+    "minecraft:behavior.peek": {
+      "type": "object",
+      "properties": {"priority": {"type": "integer"}},
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade durma em uma cama compartilhada com seu dono.
+    "minecraft:behavior.pet_sleep_with_owner": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "requer playerque a seja marcado como proprietário da entidade, por meio de domação ou comando de console.", "enum": ["requer playerque a seja marcado como proprietário da entidade, por meio de domação ou comando de console."]},
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "integer", "default": 10},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "search_height": {"type": "integer", "default": 1},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade pegue itens selecionados do chão.
+    "minecraft:behavior.pickup_items": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "can_pickup_any_item": {"type": "boolean"},
+        "can_pickup_to_hand_or_equipment": {"type": "boolean", "default": true},
+        "excluded_items": {"type": "array", "items": {"type": "string"}},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "max_dist": {"type": "number"},
+        "pickup_based_on_chance": {"type": "boolean"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "track_target": {"type": "boolean"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que a multidão se finja de morta quando atacada por outras entidades. Ao se fingir de morto, outras entidades não terão como alvo esse mob.
+    "minecraft:behavior.play_dead": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "play_dead": {"type": "boolean", "default": true},
+        "duration": {"type": "number", "default": 1.0},
+        "random_start_chance": {"type": "number", "default": 1.0},
+        "force_below_heath": {"type": "integer"},
+        "random_damage_range": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2},
+        "damage_sources": {"type": "array", "items": {"type": "string"}},
+        "apply_regeneration": {"type": "boolean"},
+        "filters": {}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade brinque com entidades que foram marcadas como baby.
+    "minecraft:behavior.play": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo villagertipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo villagertipo de entidade."]},
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade seja montável depois de ser domada por um jogador.
+    "minecraft:behavior.player_ride_tamed": {"type": "object"},
+
+    // permite que uma entidade coma culturas que foram plantadas em uma fazenda.
+    "minecraft:behavior.raid_garden": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "blocks": {"type": "array", "items": {"type": "string"}},
+        "eat_delay": {"type": "integer", "default": 2},
+        "full_delay": {"type": "integer", "default": 100},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "initial_eat_delay": {"type": "integer"},
+        "max_to_eat": {"type": "integer", "default": 6},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que o mob procure um alvo aleatório e, se existir um caminho direto entre o mob e o alvo, ele realizará uma investida. Se o ataque acertar, o alvo será empurrado para trás com base na velocidade do mob.
+    "minecraft:behavior.ram_attack": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "ram_distance": {"type": "integer", "default": 7},
+        "min_ram_distance": {"type": "integer", "default": 4},
+        "knockback_force": {"type": "number", "default": 5.0},
+        "baby_knockback_modifier": {"type": "integer", "default": 4},
+        "knockback_height": {"type": "number", "default": 0.1},
+        "run_speed": {"type": "number", "default": 1.0},
+        "ram_speed": {"type": "number", "default": 2.0},
+        "pre_ram_sound": {"type": "string"},
+        "ram_impact_sound": {"type": "string"},
+        "trigger": {"type": "string"},
+        "cooldown_range": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade ultrapasse a superfície da água em um intervalo aleatório.
+    "minecraft:behavior.random_breach": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_time": {'type': "number"},
+        "interval": {"type": "integer", "default": 120},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "xz_dist": {"type": "integer", "default": 10},
+        "y_dist": {"type": "integer", 'default': 7}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade voe para um local aleatório.
+    "minecraft:behavior.random_fly": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "can_land_on_trees": {"type": "boolean", "default": true},
+        "xz_dist": {"type": "integer", "default": 10},
+        "y_dist": {"type": "integer", 'default': 7}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade passe o mouse em locais aleatórios.
+    "minecraft:behavior.random_hover": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "hover_height": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+        "interval": {"type": "integer", "default": 120},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "xz_dist": {"type": "integer", "default": 10},
+        "y_dist": {"type": "integer", 'default': 7},
+        "y_offset": {"type": "number"}
+      },
+      "required": []
+    },
+
+    // permite que uma entidade se sente no lugar e olhe em diferentes direções.
+    "minecraft:behavior.random_look_around_and_sit": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "max_look_count": {"type": "integer", "default": 2},
+        "max_look_time": {"type": "integer", "default": 40},
+        "min_look_count": {"type": "integer", "default": 1},
+        "min_look_time": {"type": "integer", "default": 20},
+        "probability": {"type": "number", "default": 0.02}
+      },
+      "required": ["priority"]
+    },
+
+    //
+    "minecraft:behavior.random_look_around": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "look_time": {"type": "array", "items": {"type": "integer"}, "minItems": 2, "maxItems": 2}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade pare e fique sentada por um período de tempo aleatório.
+    "minecraft:behavior.random_sitting": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number", "default": 0.0},
+        "min_sit_time": {"type": "number", "default": 10.0},
+        "start_chance": {"type": "number", "default": 0.1},
+        "stop_chance": {"type": "number", "default": 0.3}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade escolha uma direção aleatória para caminhar.
+    "minecraft:behavior.random_stroll": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "interval": {"type": "integer", "default": 120},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "xz_dist": {"type": "integer", "default": 10},
+        "y_dist": {"type": "integer", "default": 7}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade nade em um ponto aleatório na água.
+    "minecraft:behavior.random_swim": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "interval": {"type": "integer", "default": 120},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "xz_dist": {"type": "integer", "default": 10},
+        "y_dist": {"type": "integer", "default": 7}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade acasale com outra entidade semelhante quando abordada para procriar.
+    "minecraft:behavior.receive_love": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo villagertipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo villagertipo de entidade."]},
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade fique dentro de casa enquanto o sol está se pondo.
+    "minecraft:behavior.restrict_open_door": {
+      "type": "object",
+      "properties": {"priority": {"type": "integer"}},
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade evite ativamente a luz solar direta.
+    "minecraft:behavior.restrict_sun": {
+      "type": "object",
+      "properties": {"priority": {"type": "integer"}},
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade suba ao topo de um bloco líquido se estiver localizada em um ou tiver gerado sob um bloco líquido.
+    "minecraft:behavior.rise_to_liquid_level": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "liquid_y_offset": {"type": "number"},
+        "rise_delta": {"type": "number"},
+        "sink_delta": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+
+    // permite que uma entidade avance.
+    "minecraft:behavior.roll": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "probability": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority", "probability"]
+    },
+
+    // permite que uma entidade corra sem um objetivo definido.
+    "minecraft:behavior.run_around_like_crazy": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.5}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade fique com medo e reaja quando ocorre uma tempestade.
+    "minecraft:behavior.scared": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "sound_interval": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade envie um evento para outra entidade.
+    "minecraft:behavior.send_event": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cast_duration": {"type": "number"},
+        "look_at_target": {"type": "boolean", "default": true},
+        "sequence": {"type": "array", "items": {"type": "object", "properties": {
+          "base_delay": {"type": "number"},
+          "event": {"type": "string"},
+          "sound_event": {"type": "string"}
+        }}}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade compartilhe itens que possui em seu inventário com outras entidades específicas que foram definidas.
+    "minecraft:behavior.share_items": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "max_dist": {"type": "number"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    //  permite que uma entidade alerte outras entidades da mesma família para deixar um bloco de pedra.
+    "minecraft:behavior.silverfish_wake_up_friends": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo silverfishtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo silverfishtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"],
+    },
+
+    // permite que uma entidade entre em um bloco de pedra.
+    "minecraft:behavior.silverfish_merge_with_stone": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo silverfishtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo silverfishtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade funcione como uma armadilha para cavalos esqueletos e seja acionada como eles, gerando um raio, cavalos esqueletos adicionais e cavaleiros esqueletos quando um jogador se aproxima.
+    "minecraft:behavior.skeleton_horse_trap": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo tipo de entidade horse, e .muledonkeyskeleton horses", "enum": ["Esse comportamento só pode ser usado pelo tipo de entidade horse, e .muledonkeyskeleton horses"]},
+        "priority": {"type": "integer"},
+        "duration": {"type": "number", "default": 1.0},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    //  permite que uma entidade durma em uma cama.
+    "minecraft:behavior.sleep": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo villagertipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo villagertipo de entidade."]},
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number", "default": 0.0},
+        "sleep_collider_height": {"type": "number", "default": 1.0},
+        "sleep_collider_width": {"type": "number", "default": 1.0},
+        "sleep_y_offset": {"type": "number", "default": 1.0},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "timeout_cooldown": {"type": "number", "default": 8.0}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade faça um ataque corpo a corpo semelhante ao slimee magma_cube.
+    "minecraft:behavior.slime_attack": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "stalk_speed": {"type": "number"},
+        "max_stalk_dist": {"type": "number"},
+        "leap_height": {"type": "number"},
+        "leap_dist": {"type": "number"},
+        "pounce_max_dist": {"type": "number"},
+        "interest_time": {"type": "number"},
+        "stuck_time": {"type": "number"},
+        "strike_dist": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade pare e interaja com itens alimentares selecionados que estão próximos.
+    "minecraft:behavior.snacking": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "items": {"type": "array", "items": {"type": "string"}},
+        "snacking_cooldown": {"type": "number", "default": 7.5},
+        "snacking_cooldown_min": {"type": "number", "default": 0.5},
+        "snacking_stop_chance": {"type": "number", "default": 0.0017}
+      },
+      "required": ["priority"]
+    },
+
+    // permite a uma entidade espirrar e potencialmente assustar outras entidades. Ao espirrar, a entidade pode deixar cair um item.
+    "minecraft:behavior.sneeze": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "requer playerque a seja marcado como proprietário da entidade, por meio de domação ou comando de console.", "enum": ["requer playerque a seja marcado como proprietário da entidade, por meio de domação ou comando de console."]},
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number"},
+        "drop_item_chance": {"type": "number", "default": 1.0},
+        "entity_types": {"$ref": "#/$def/entity_types"},
+        "loot_table": {"type": "string"},
+        "prepare_sound": {"type": "string"},
+        "prepare_time": {"type": "number", "default": 1.0},
+        "probability": {"type": "number", "default": 0.02},
+        "sound": {"type": "string"},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade mergulhe debaixo d'água
+    "minecraft:behavior.squid_dive": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo squidtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo squidtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade nade para longe quando atacada.
+    "minecraft:behavior.squid_flee": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo squidtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo squidtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade nade no lugar.
+    "minecraft:behavior.squid_idle": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo squidtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo squidtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade nade para longe dos blocos de chão.
+    "minecraft:behavior.squid_move_away_from_ground": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo squidtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo squidtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade fique perto de um bloco de solo quando estiver fora da água
+    "minecraft:behavior.squid_out_of_water": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo squidtipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo squidtipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade persiga um alvo específico. Uma vez dentro do alcance do alvo, a entidade saltará no alvo e causará dano com base em seu atributo de ataque.
+    "minecraft:behavior.stalk_and_pounce_on_target": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "interest_time": {"type": "number", "default": 2.0},
+        "leap_distance": {"type": "number", "default": 0.8},
+        "leap_height": {"type": "number", "default": 0.9},
+        "max_stalk_dist": {"type": "number", "default": 10.0},
+        "pounce_max_dist": {"type": "number", "default": 5.0},
+        "set_persistent": {"type": "boolean"},
+        "stalk_speed": {"type": "number", "default": 1.2},
+        "strike_dist": {"type": "number", "default": 2.0},
+        "stuck_time": {"type": "number", "default": 2.0}
+      },
+      "required": ["priority"]
+    },
+
+    //permite que uma entidade alveje e pise em ovos de tartaruga quando detectado.
+    "minecraft:behavior.stomp_turtle_egg": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "interval": {"type": "integer", "default": 120},
+        "search_height": {"type": "integer", "default": 1},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade permaneça no lugar enquanto está sentada.
+    "minecraft:behavior.stay_while_sitting": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+
+    // permite que uma entidade navegue e procure uma aldeia próxima.
+    "minecraft:behavior.stroll_towards_village": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "cooldown_time": {"type": "number"},
+        "goal_radius": {"type": "number", "default": 0.5},
+        "search_range": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "start_chance": {"type": "number", "default": 0.1}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade ataque outras entidades invocando novas entidades.
+    "minecraft:behavior.summon_entity": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "summon_choices": {"type": "array", "items": {"type": "object", "properties": {
+          "cast_duration": {"type": "number"},
+          "cooldown_time": {"type": "number"},
+          "do_casting": {"type": "boolean", "default": true},
+          "filters": {},
+          "max_activation_range": {"type": "number", "default": 32.0},
+          "min_activation_range": {"type": "number", "default": 1.0},
+          "particle_color": {"type": "integer"},
+          "start_sound_event": {"type": "string"},
+          "weight": {"type": "number"},
+          "sequence": {"type": "array", "items": {"type": "object", "properties": {
+            "base_delay": {"type": "number"},
+            "delay_per_summon": {"type": "number"},
+            "entity_lifespan": {"type": "number", "default": -1.0},
+            "entity_type": {"type": "string"},
+            "num_entities_spawned": {"type": "integer", "default": 1},
+            "shape": {"type": "string", "default": 'line'},
+            "size": {"type": "number", "default": 1.0},
+            "sound_event": {"type": "string"},
+            "summon_cap": {"type": "integer"},
+            "summon_cap_radius": {"type": "number"},
+            "target": {"type": "string", "default": "self"}
+          },
+            "required": [
+              "base_delay",
+              "delay_per_summon",
+              "entity_lifespan",
+              "entity_type",
+              "num_entities_spawned",
+              "shape",
+              "size",
+              "sound_event",
+              "summon_cap",
+              "summon_cap_radius",
+              "target"
+            ]}}}}}
+      },
+      "required": ["priority", "summon_choices"]
+    },
+
+    // permite que uma entidade cresça em tamanho quando se aproxima e reduza de volta ao normal após uma certa distância.
+    "minecraft:behavior.swell": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "start_distance": {"type": "number", "default": 10.0},
+        "stop_distance": {"type": "number", "default": 2.0}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade receba flores quando apresentadas pela iron_gol em entidade.
+    "minecraft:behavior.take_flower": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo villager tipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo villag ertipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade seja tentada por um item definido.
+    "minecraft:behavior.tempt": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "can_get_scared": {"type": "boolean"},
+        "items": {"type": "array", "items": {"type": "string"}},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se concentre em um jogador que iniciará uma negociação.
+    "minecraft:behavior.trade_interest": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "carried_item_switch_time": {"type": "number", "default": 2.0},
+        "cooldown": {"type": "number", "default": 2.0},
+        "interest_time": {"type": "number", "default": 45.0},
+        "remove_item_time": {"type": "number", "default": 1.0},
+        "within_radius": {"type": "number"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade se concentre em um jogador que iniciará uma negociação.
+    "minecraft:behavior.trade_with_player": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade da vexfamília segmente a mesma entidade que seu proprietário.
+    "minecraft:behavior.vex_copy_owner_target": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "não é mais usado para a vex entidade.", "enum": ["não é mais usado para a vex entidade."]},
+        "priority": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"}
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade da vexfamília se mova aleatoriamente.
+    "minecraft:behavior.vex_random_move": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "não é mais usado para a vex entidade. Em vez disso, minecraft:navigation.walke minecraft:behavior.float permita que a vex entidade navegue.", "enum": ["não é mais usado para a vex entidade. Em vez disso, minecraft:navigation.walke minecraft:behavior.float permita que a vex entidade navegue."]},
+        "priority": {"type": "integer"},
+      },
+      "required": ["priority"]
+    },
+
+    // permite que uma entidade ataque aleatoriamente.
+    "minecraft:behavior.wither_random_attack_pos_goal": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo wither tipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo wither tipo de entidade."]},
+        "priority": {"type": "integer"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade concentre seus ataques em qualquer mob hostil que tenha causado o maior dano a ela.
+    "minecraft:behavior.wither_target_highest_damage": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Esse comportamento só pode ser usado pelo wither tipo de entidade.", "enum": ["Esse comportamento só pode ser usado pelo wither tipo de entidade."]},
+        "priority": {"type": "integer"},
+        "entity_types": {"$ref": "#/$def/entity_types"}
+      },
+      "required": ["info", "priority"]
+    },
+
+    // permite que uma entidade navegue e interaja com um ponto de interesse que foi atribuído como seu local de trabalho.
+    "minecraft:behavior.work": {
+      "type": "object",
+      "properties": {
+        "priority": {"type": "integer"},
+        "active_time": {"type": "integer"},
+        "can_work_in_rain": {"type": "boolean"},
+        "goal_cooldown": {"type": "integer"},
+        "on_arrival": {"$ref": "#/$def/event_and_target"},
+        "sound_delay_max": {"type": "integer"},
+        "sound_delay_min": {"type": "integer"},
+        "speed_multiplier": {"type": "number", "default": 1.0},
+        "work_in_rain_tolerance": {"type": "integer", "default": -1}
+      },
+      "required": ["priority"]
+    },
+
+// ================================================ atributos ===========================================================
+
+    // permite que uma entidade defina o ataque corpo a corpo de uma entidade e quaisquer efeitos adicionais em seu ataque.
+    "minecraft:attack": {
+      "type": "object",
+      "properties": {
+        "damage": {"type": ["integer", "array"], "items": {"type": "integer"}, "minItems": 2, "maxItems": 2},
+        "effect_duration": {"type": "number"},
+        "effect_name": {"type": "string"}
+      },
+      "required": ["damage"]
+    },
+
+    // permite que uma entidade defina o ataque corpo a corpo de uma entidade e quaisquer efeitos adicionais em seu ataque.
+    "minecraft:spell_effects": {
+      "type": "object",
+      "properties": {
+        "add_effects": {"type": "array", "items": {"type": "object",
+          "properties": {"effect": {"type": "string"}},
+          "required": ["effect"]
+        }},
+        "remove_effects": {"type": "string"}
+      },
+      "required": []
+    },
+
+    "minecraft:strength": {
+      "type": "object",
+      "properties": {
+        "max": {"type": "integer", "default": 5},
+        "value": {"type": "integer", "default": 1}
+      },
+      "required": ["max", "value"]
+    },
+
+// ================================================ Propriedades ========================================================
+
+    // irá definir o atraso da entidade entre a reprodução do som ambiente.
+    "minecraft:ambient_sound_interval": {
+      "type": "object",
+      "properties": {
+        "event_name": {"type": "string"},
+        "range": {"type": "number", "default": 16.000000},
+        "value": {"type": "number", "default": 8.000000}
+      },
+      "required": []
+    },
+
+    // permite que uma entidade suba escadas.
+    "minecraft:can_climb": {"type": "object"},
+
+    // permite a uma entidade a capacidade de voar, o pathfinder não ficará restrito a caminhos onde um bloco sólido é necessário abaixo dele.
+    "minecraft:can_fly": {"type": "object"},
+
+    // que uma entidade pule de forma semelhante à horseentidade.
+    "minecraft:can_power_jump": {"type": "object"},
+
+    // define a largura e a altura da caixa de colisão da Entidade.
+    "minecraft:collision_box": {
+      "type": "object",
+      "properties": {
+        "height": {"type": "number", "default": 1.0},
+        "width": {"type": "number", "default": 1.0}
+      },
+      "required": []
+    },
+
+    // Define a cor principal da entidade.
+    "minecraft:color": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Este atributo funciona apenas em entidades vanilla que possuem valores de cor predefinidos ( sheep, llama, shulker).", "enum": ["Este atributo funciona apenas em entidades vanilla que possuem valores de cor predefinidos ( sheep, llama, shulker)."]},
+        "value": {"type": "integer"}
+      },
+      "required": ["info", "value"]
+    },
+
+    // Define a segunda cor de textura da entidade.
+    "minecraft:color2": {
+      "type": "object",
+      "properties": {
+        "info": {"type": "string", "default": "Este atributo só funciona em entidades vanilla que possuem um segundo valor de cor predefinido ( tropical fish)"},
+        "value": {"type": "integer"}
+      },
+      "required": ["info", "value"]
+    },
+
+    // define o ângulo de rotação da cabeça padrão desta entidade.
+    "minecraft:default_look_angle": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number"}
+      },
+      "required": []
+    },
+
+    // define a tabela de equipamentos a ser usada pela entidade.
+    "minecraft:equipment": {
+      "type": "object",
+      "properties": {
+        "slot_drop_chance": {"type": "array", "items": {"type": "object", "properties": {
+          "slot": {"type": "string"},
+          "drop_chande": {"type": "number"}
+        },
+          "required": ["slot", "drop_chande"]
+        }},
+        "table": {"type": "string"}
+      },
+      "required": []
+    },
+
+    // permite que uma entidade sofra 0 de dano de fogo.
+    "minecraft:fire_immune": {"type": "object"},
+
+    // permite à entidade a capacidade de flutuar em blocos líquidos.
+    "minecraft:floats_in_liquid": {"type": "object",},
+
+    // define a velocidade, em Blocos, com que velocidade essa entidade voa.
+    "minecraft:flying_speed": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number"}
+      },
+      "required": []
+    },
+
+    // define quanto atrito afeta essa entidade.
+    "minecraft:friction_modifier": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number", "default": 1.0}
+      },
+      "required": []
+    },
+
+    // define o deslocamento do terreno em que a entidade está realmente.
+    "minecraft:ground_offset": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number", "default": 1.0}
+      },
+      "required": []
+    },
+
+    // permite que uma entidade montável seja controlada usando os controles do teclado quando montada por um jogador.
+    "minecraft:input_ground_controlled": {"type": "object"},
+
+    // define que a entidade é um bebê.
+    "minecraft:is_baby": {"type": "object"},
+
+    // define que a entidade é cobrada.
+    "minecraft:is_charged": {"type": "object"},
+
+    // define que a entidade está atualmente carregando um baú.
+    "minecraft:is_chested": {"type": "object"},
+
+    // permite que a entidade interaja com corantes para mudar sua cor.
+    "minecraft:is_dyeable": {
+      "type": "object",
+      "properties": {
+        "interact_text": {"type": "string"}
+      },
+      "required": ["interact_text"]
+    },
+
+    // define que a entidade pode se esconder de mobs hostis enquanto invisível.
+    "minecraft:is_hidden_when_invisible": {"type": "object"},
+
+    // define que a entidade está atualmente em chamas.
+    "minecraft:is_ignited": {"type": "object"},
+
+    // define que a entidade é um capitão illager.
+    "minecraft:is_illager_captain": {"type": "object"},
+
+    // define que a entidade está atualmente selada.
+    "minecraft:is_saddled": {"type": "object"},
+
+    // define uma entidade que está tremendo no momento.
+    "minecraft:is_shaking": {"type": "object"},
+
+    // define que esta entidade está atualmente cortada.
+    "minecraft:is_sheared": {"type": "object"},
+
+    // define que essa entidade pode ser empilhada.
+    "minecraft:is_stackable": {"type": "object"},
+
+    // define que esta entidade está atualmente atordoada.
+    "minecraft:is_stunned": {"type": "object"},
+
+    // define que esta entidade está atualmente domada.
+    "minecraft:is_tamed": {"type": "object"},
+
+    // permite que uma entidade seja controlada por um item ao montar essa entidade.
+    "minecraft:item_controllable": {
+      "type": "object",
+      "properties": {
+        "control_item": {"type": ["string", "array"], "items": {"type": "string"}}
+      },
+      "required": []
+    },
+
+    // define a tabela de saque para quais itens esta entidade deixa cair após a morte.
+    "minecraft:loot": {
+      "type": "object",
+      "properties": {
+        "table": {"type": "string"}
+      },
+      "required": []
+    },
+
+    // define a variante para a entidade a ser usada.
+    "minecraft:mark_variant": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "integer"}
+      },
+      "required": []
+    },
+
+    // define a distância pela qual a entidade pode avançar.
+    "minecraft:push_through": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number"}
+      },
+      "required": []
+    },
+
+    // define o tamanho visual da entidade dimensionando o tamanho do modelo.
+    "minecraft:scale": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number"}
+      },
+      "required": []
+    },
+
+
+    // define o valor de Skin ID da entidade. Pode ser usado para diferenciar skins, como skins básicas para aldeões.
+    "minecraft:skin_id": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "integer"}
+      },
+      "required": []
+    },
+
+    // define o volume base da entidade para efeitos sonoros.
+    "minecraft:sound_volume": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "integer", "default": 1.0}
+      },
+      "required": []
+    },
+
+
+    // define as famílias a que esta entidade pertence.
+    "minecraft:type_family": {
+      "type": "object",
+      "properties": {
+        "family": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": []
+    },
+
+    // é usado para diferenciar o grupo de componentes de uma variante de uma entidade de outras, como ocelot, villagere horse.
+    "minecraft:variant": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "integer"}
+      },
+      "required": []
+    },
+
+
+    // define o multiplicador de velocidade para a velocidade de animação de caminhada desta entidade.
+    "minecraft:walk_animation_speed": {
+      "type": "object",
+      "properties": {
+        "value": {"type": "number"}
+      },
+      "required": []
+    },
+
+    // define que esta entidade quer se tornar um jóquei.
+    "minecraft:wants_jockey": {"type": "object"},
+
+// ================================================== Gatilhos ==========================================================
+
+    // adiciona um gatilho para chamar a morte desta entidade.
+    "minecraft:on_death": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar a morte desta entidade.
+    "minecraft:on_friendly_anger": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade recebe dano de um jogador.
+    "minecraft:on_hurt_by_player": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade sofre dano.
+    "minecraft:on_hurt": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade é incendiada.
+    "minecraft:on_ignite": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade chega.
+    "minecraft:on_start_landing": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade começa a voar.
+    "minecraft:on_start_takeoff": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade encontra um destino.
+    "minecraft:on_target_acquired": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando esta entidade perde o destino que possui atualmente.
+    "minecraft:on_target_escape": {"$ref": "#/$def/gatilhos"},
+
+    // adiciona um gatilho para chamar quando o dono deste animal acorda depois de dormir com o animal.
+    "minecraft:on_wake_with_owner": {"$ref": "#/$def/gatilhos"},
+
+// ============================================== Eventos Integrados ====================================================
+
+    // aciona uma chamada de evento em uma entidade quando a entidade nasce via breeding.
+    "minecraft:entity_born": {"type": "object"},
+
+    // aciona uma chamada de evento em uma entidade quando a entidade é gerada no mundo.
+    "minecraft:entity_spawned": {"type": "object"},
+
+    // aciona uma chamada de evento em uma entidade que se transforma em outra entidade
+    "minecraft:entity_transformed": {"type": "object"},
+
+    // aciona uma chamada de evento em uma entidade quando a entidade está configurada para explodir.
+    "minecraft:on_prime": {"type": "object"}
+  },
+
+  "$def": {
+    "max_turn": {"type": "number", "default": 30.0},
+    "minecraft:navigation": {
+      "type": "object",
+      "properties": {
+        "avoid_damage_blocks": {"type": "boolean"},
+        "avoid_portals": {"type": "boolean"},
+        "avoid_sun": {"type": "boolean"},
+        "avoid_water": {"type": "boolean"},
+        "blocks_to_avoid": {"type": "array", "items": {"type": "string"}},
+        "can_breach": {"type": "boolean"},
+        "can_break_doors": {"type": "boolean"},
+        "can_jump": {"type": "boolean", "default": true},
+        "can_open_doors": {"type": "boolean"},
+        "can_pass_doors": {"type": "boolean", "default": true},
+        "can_path_over_lava": {"type": "boolean"},
+        "can_path_from_air": {"type": "boolean"},
+        "can_path_over_water": {"type": "boolean"},
+        "can_sink": {"type": "boolean", "default": true},
+        "can_swim": {"type": "boolean"},
+        "can_walk": {"type": "boolean", "default": true},
+        "can_walk_in_lava": {"type": "boolean"},
+        "is_amphibious": {"type": "boolean"}
+      }},
+    "event": {"type": "string"},
+    "event_and_target": {"type": ["object", "string"], "properties": {
+      "event": {"type": "string"},
+      "target": {"type": "string", "default": "self"}
+    }},
+    "entity_types": {"type": ["array", "object"],"properties": {
+      "filters": {},
+      "max_dist": {"type": "number", "default": 16.0},
+      "must_see": {"type": "boolean"},
+      "must_see_forget_duration": {"type": "number", "default": 3.0},
+      "sprint_speed_multiplier": {"type": "number", "default": 1.0},
+      "walk_speed_multiplier": {"type": "number", "default": 1.0}
+    }},
+    "look_at": {"type": "object", "properties": {
+      "priority": {"type": "integer"},
+      "angle_of_view_horizontal": {"type": "integer", "default": 360},
+      "angle_of_view_vertical": {"type": "integer", "default": 360},
+      "look_distance": {"type": "number", "default": 8.0},
+      "look_time": {
+        "type": "array", "items": {"type": "integer"}, "default": [2, 4], "minItems": 2, "maxItems": 2
+      },
+      "probability": {"type": "number", "default": 0.02}
+    }, "required": ["priority"]},
+    "move_to": {"type": "object","properties": {
+      "priority": {"type": "integer"},
+      "goal_radius": {"type": "number", "default": 0.5},
+      "search_count": {"type": "integer", "default": 10},
+      "search_height": {"type": "integer", "default": 1},
+      "search_range": {"type": "integer"},
+      "speed_multiplier": {"type": "number", "default": 1.0}
+    },
+      "required": ["priority"]
+    },
+    "gatilhos": {
+      "event": {"type": "string"},
+      "filters": {},
+      "target": {"type": "string", "default": "self"},
+    }
+  },
+  "dependencies": {
+    "minecraft:addrider": ["minecraft:rideable"],
+    "minecraft:annotation.break_door": ["minecraft:navigation.walk"],
+    "minecraft:breedable": ["minecraft:behavior.breed"],
+    "minecraft:behavior.breed": ["minecraft:breedable"],
+    "minecraft:behavior.barter": ["minecraft:barter"],
+    "minecraft:behavior.hold_ground": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:behavior.leap_at_targe": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:behavior.look_at_target": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:behavior.look_at_trading_player": ["minecraft:economy_trade_table", "minecraft:trade_table"],
+    "minecraft:behavior.melee_attack:": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:behavior.move_towards_target": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:behavior.silverfish_wake_up_friends": ["minecraft:behavior.silverfish_merge_with_stone"],
+    "minecraft:behavior.stalk_and_pounce_on_target": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:behavior.slime_attack": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:on_target_escape": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"],
+    "minecraft:on_target_acquired": ["minecraft:behavior.nearest_attackable_target", "minecraft:behavior.hurt_by_target"]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  $schema: 'https://json-schema.org/draft-07/schema',
+  $id: 'description.schema.json',
+  type: 'object',
+  title: 'description',
+  properties: {
+    identifier: {type: 'string'},
+    is_summonable: {type: 'boolean'},
+    is_spawnable: {type: 'boolean'},
+    is_experimental: {type: 'boolean'}
+  },
+  required: ['identifier', 'is_summonable', 'is_spawnable', 'is_experimental']
+}

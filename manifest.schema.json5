@@ -1,0 +1,64 @@
+{
+  $schema: 'http://json-schema.org/draft-07/schema',
+  $id: 'manifest.schema.json',
+  title: 'manifest',
+
+  type: 'object',
+  properties: {
+    format_version: {type: 'integer', enum: [1, 2]},
+
+    // cabeçalho
+    header: {type: 'object', properties: {
+      base_game_version: {type: 'array', items: {type: 'integer'}, minItems: 3, maxItems: 3},
+      description: {type: 'string'},
+      lock_template_options: {type: 'boolean'},
+      min_engine_version: {type: ['array', 'string'], items: {type: 'integer'}, minItems: 3, maxItems: 3},
+      name: {type: 'string'},
+      uuid: {type: 'string'},
+      version: {type: ['array', 'string'], items: {type: 'integer'}, minItems: 3, maxItems: 3}
+    },
+      required: ['description', 'name', 'min_engine_version', 'uuid', 'version'],
+      uniqueItems: true
+    },
+
+    // objeto de modulo
+    modules: {type: 'array', items: {type: 'object', properties: {
+      description: {type: 'string'},
+      type: {type: 'string', enum: [
+        'resources', 'data', 'client_data', 'interface', 'world_template', 'javascript'
+      ]},
+      uuid: {type: 'string'},
+      version: {type: ['array', 'string'], items: {type: 'integer'}, minItems: 3, maxItems: 3}
+    },
+      required: ['description', 'type', 'version', 'uuid']
+    },
+      uniqueItems: true
+    },
+
+    // dependências do pacote
+    dependencies: {type: 'array', items: {type: 'object', properties: {
+      uuid: {type: 'string'},
+      version: {type: ['array', 'string'], items: {type: 'integer'}, minItems: 3, maxItems: 3}
+    },
+      required: ['uuid', 'version']
+    },
+      uniqueItems: true
+    },
+
+    // capacidades
+    capabilities: {type: 'object', properties: {
+      experimental_custom_ui: {},
+      chemistry: {},
+      raytraced: {}
+    }},
+
+    // dados do criador do pacote
+    metadata: {type: 'object', properties: {
+      authors: {type: 'array', items: {type: 'string'}},
+      license: {type: 'string'},
+      url: {type: 'string'}
+    }}
+  },
+  required: ['format_version', 'header', 'modules'],
+  uniqueItems: true
+}

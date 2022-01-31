@@ -1,0 +1,12 @@
+{
+  $schema: 'http://json-schema.org/draft-07/schema',
+  $id: 'item.description.schema',
+  type: 'object',
+  title: 'minecraft:item',
+  properties: {
+    category: {type: 'string'},
+    identifier: {type: 'string'},
+    is_experimental: {type: 'boolean'}
+  },
+  required: ['identifier']
+}

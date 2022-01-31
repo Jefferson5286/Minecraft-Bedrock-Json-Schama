@@ -1,0 +1,238 @@
+{
+  $schema: 'http://json-schema.org/draft-07/schema',
+  $id: 'items.components.schema.json',
+  title: 'minecraft:item',
+  type: 'object',
+  properties: {
+
+    // determina a quantidade de proteção que você tem em seu item de armadura.
+    'minecraft:armor': {
+      type: 'object',
+      properties: {
+        protection: {type: 'integer'},
+        texture_type: {type: 'string'}
+      },
+      required: ['protection', 'texture_type']
+    },
+
+    // define o item como um componente de item Planter para blocos. Itens de plantador são itens que podem ser plantados em outro bloco.
+    'minecraft:block_placer': {
+      type: 'object',
+      properties: {
+        block: {type: 'string'},
+        use_on: {type: 'array', items: {type: 'string'}}
+      },
+      required: ['block', 'use_on']
+    },
+
+    // define o tempo de "resfriamento" do item. Depois de usar um item, ele se torna inutilizável pela duração especificada pela configuração de 'duração' neste componente.
+    'minecraft:cooldown': {
+      type: 'object',
+      properties: {
+        category: {type: 'string'},
+        duration: {type: 'number'}
+      },
+      required: ['category', 'duration']
+    },
+
+    // define o item como um item "Digger". Componente colocado em itens que cavam.
+    'minecraft:digger': {
+      type: 'object',
+      properties: {
+        destroy_speeds: {type: 'array', items: {type: 'string'}},
+        on_dig: {type: 'string'},
+        use_efficiency: {type: 'boolean'}
+      },
+      required: ['destroy_speeds', 'on_dig']
+    },
+
+    // Componente de item de nome de exibição. Nomes de exibição exibem o nome de um item.
+    'minecraft:display_name': {
+      type: 'object',
+      properties: {
+        value: {type: 'string'}
+      }
+    },
+
+    // define quanto dano o item pode sofrer antes de quebrar.
+    'minecraft:durability': {
+      type: 'object',
+      properties: {
+        damage_chance: {type: 'number'},
+        max_durability: {type: 'integer'}
+      },
+      required: ['damage_chance', 'max_durability']
+    },
+
+    // define a cor de um item definido como corante.
+    'minecraft:dye_powder': {
+      type: 'object',
+      properties: {
+        color: {type: 'string', enum: [
+          'Black', 'Red', 'Green', 'Brown', 'Blue', 'Purple', 'Cyan',
+          'Light gray', 'Gray', 'Pink', 'Lime', 'Yellow', 'Light blue',
+          'Magenta', 'Orange', 'White'
+        ]}
+      },
+      required: ['color']
+    },
+
+    // define o item como um componente de item Planter para Entidades. Itens de plantador são itens que podem ser plantados em outro bloco.
+    'minecraft:entity_placer': {
+      type: 'object',
+      properties: {
+        dispanse_on: {type: ['string', 'array']},
+        entity: {type: 'string'},
+        use_on: {type: ['string', 'array']}
+      }
+    },
+
+    // define o item como um componente alimentar, permitindo que seja comestível para o jogador.
+    'minecraft:food': {
+      type: 'object',
+      properties: {
+        can_always_eat: {type: 'boolean'},
+        nutrition: {type: 'integer'},
+        effects: {type: 'array', items: {type: 'object',
+          properties: {
+            name: {type: 'string'},
+            chance: {type: 'number', default: 1.0},
+            duration: {type: 'integer', default: 5},
+            amplifier: {type: 'integer'}
+          },
+          required: ['name', 'chance', 'duration']
+        }},
+        saturation_modifier: {type: 'string'},
+        using_converts_to: {type: 'string'}
+      },
+      required: ['nutrition', 'effects', 'saturation_modifier', 'using_converts_to']
+    },
+
+    // define o item como um componente de combustível, permitindo que este item seja usado como combustível em uma fornalha para 'cozinhar' outros itens.
+    'minecraft:fuel': {
+      type: 'object',
+      properties: {
+        duration: {type: 'number'}
+      },
+      required: ['duration']
+    },
+
+    // define o componente do item de ícone. Determina o ícone para representar o item na interface do usuário e em outros lugares.
+    'minecraft:icon': {
+      type: 'object',
+      properties: {
+        frame: {type: 'number'},
+        legacy_id: {type: 'integer'},
+        texture: {type: 'string'}
+      },
+      required: ['texture']
+    },
+
+    // define o componente do item de resistência ao knockback. Determina a quantidade de resistência ao knockback que o item tem.
+    'minecraft:knockback_resistance': {
+      type: 'object',
+      properties: {
+        protection: {type: 'number'}
+      },
+      required: ['protection']
+    },
+
+    // Permite que você receba um evento quando o item for usado.
+    'minecraft:on_use': {
+      type: 'object',
+      properties: {
+        on_use: {type: 'string'}
+      },
+      required: ['on_use']
+    },
+
+    // Permite que você receba um evento quando o item for usado em um bloco do mundo.
+    'minecraft:on_use_on': {
+      type: 'object',
+      properties: {
+        on_use_on: {type: 'string'}
+      },
+      required: ['on_use_on']
+    },
+
+    // define o componente do item de projétil. Itens de projéteis disparam, como uma flecha.
+    'minecraft:projectile': {
+      type: 'object',
+      properties: {
+        minimum_critical_power: {type: 'number'},
+        projectile_entity: {type: "string"}
+      },
+      required: ['minimum_critical_power', 'projectile_entity']
+    },
+
+    // define o componente do item render_offsets. Valores opcionais podem ser fornecidos para compensar a forma como o item é renderizado.
+    'minecraft:render_offsets': {
+      type: 'object',
+      properties: {
+        main_hand: {type: 'array', items: {type: 'number'}, maxItems: 3, minItems: 3},
+        off_hand: {type: 'array', items: {type: 'number'}, maxItems: 3, minItems: 3}
+      }
+    },
+
+    // define o componente do item reparável com quanto dano esse item pode reparar e quais itens podem repará-lo.
+    'minecraft:repairable': {
+      type: 'object',
+      properties: {
+        on_repaired: {type: 'string'},
+        repair_items: {type: 'array', items: {type: 'string'}}
+      },
+      required: ['on_repaired', 'repair_items']
+    },
+
+    // define o componente do item de atirador.
+    'minecraft:shooter': {
+      type: 'object',
+      properties: {
+        ammunition: {type: 'string'},
+        charge_on_draw: {type: 'boolean'},
+        launch_power_scale: {type: 'number', default: 1.0},
+        max_draw_duration: {type: 'number'},
+        max_launch_power: {type: 'number', default: 1.0},
+        scale_power_by_draw_duration: {type: 'boolean'}
+      },
+      required: ['ammunition']
+    },
+
+    // define o componente de item jogável.
+    'minecraft:throwable': {
+      type: 'object',
+      properties: {
+        do_swing_animation: {type: 'boolean'},
+        launch_power_scale: {type: 'number', default: 1.0},
+        max_draw_duration: {type: 'number'},
+        max_launch_power: {type: 'number', default: 1.0},
+        min_draw_duration: {type: 'number'},
+        scale_power_by_draw_duration: {type: 'boolean'}
+      }
+    },
+
+    // define o componente do item de arma. Adicionado a cada item de arma, como machado, espada, tridente, arco, besta.
+    'minecraft:weapon': {
+      type: 'object',
+      properties: {
+        on_hit_block: {type: 'string'},
+        on_hurt_entity: {type: 'string'},
+        on_not_hurt_entity: {type: 'string'}
+      },
+      required: ['on_hit_block', 'on_hurt_entity', 'on_not_hurt_entity']
+    },
+
+    // minecraft:wearable define o componente de item vestível.
+    'minecraft:wearable': {
+      type: 'object',
+      properties: {
+        dispensable: {type: 'boolean'},
+        slot: {type: 'string', enum: [
+          'slot.weapon.mainhand', 'slot.weapon.offhand', 'slot.armor.head',
+          'slot.armor.chest', 'slot.armor.legs', 'slot.armor.feet', 'slot.hotbar',
+          'slot.inventory', 'slot.enderchest', 'slot.saddle', 'slot.armor', 'slot.chest'
+        ]}
+      }
+    },
+  }
+}
