@@ -18,6 +18,6 @@ Atualmente à (dois) arquivos principais, que são eles:
 > Algumas propriedades no arquivo ainda não estão completas.
 
 ## Formato json5
-Essa primeira versão do Json-Schema foi escrita em json5, mas também tera uma versão escrita no Json convencional. Estarei criando em ‘software’ que tera a função de validar os código dos objetos json, que sera validado usando a versão do json-schema no formato json5.
+Essa primeira versão do Json-Schema foi escrita em json5, mas também tera uma versão escrita no Json convencional. Estarei criando em ‘software’ que tera a função de validar o código dos objetos json, que sera validado usando a versão do json-schema no formato json5.
 
-IDEs como pycharm podem usar schemas-json como para a validação de código através de intellisense para validação, e tem suportam o formato Json5.
+IDEs como pycharm podem usar schemas-json como para a validação de código através de intellisense, e tem suportam o formato Json5.
