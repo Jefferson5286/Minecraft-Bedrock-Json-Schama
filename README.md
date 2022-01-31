@@ -8,7 +8,9 @@ Atualmente à (dois) arquivos principais, que são eles:
     ainda não á arquivos de validação para a parte "client" dos add-on, e para grande parte dos arquivos da parte "server", mas aqui esta a pequena lista de arquivos que já tem a validação:
 <b>
 1. arquivos de criação de behavior de ‘items’
+
 2. arquivos de criação de behavior de ‘blocks’
+
 3. arquivos de criação de behavior de ’entities’
 </b> 
     
